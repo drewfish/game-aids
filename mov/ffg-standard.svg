@@ -1,0 +1,634 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+PURPOSE
+In-game aid to help a player visualize possible trade routes.
+
+LICENSE
+To the extent possible under law, Drew Folta has waived all copyright and related or neighboring rights to this work.
+-->
+<svg 
+    xmlns:svg="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns="http://www.w3.org/2000/svg"
+    version="1.1"
+    width="1440px"
+    height="800px">
+
+    <defs>
+        <style><![CDATA[
+            #background { 
+                fill: #002;
+                stroke: none;
+            }
+            #map .grid {
+                stroke: #114;
+            }
+            #map .system .boundary {
+                fill: none;
+                stroke: #004;
+                stroke-width: 3;
+            }
+            #map .system.hazard .boundary {
+                stroke: #402;
+                stroke-dasharray: 6 3;
+            }
+            #map .path {
+                fill: none;
+                stroke: #004;
+                stroke-width: 3;
+                stroke-dasharray: 6 3;
+            }
+            .icon path {
+                fill: #00E;
+                stroke: none;
+            }
+            .icon rect {
+                fill: #002;
+                stroke: none;
+            }
+
+            div {
+                color: #CCF;
+            }
+            #crossx , #crossy {
+                stroke: #FFF;
+                stroke-width: 1px;
+            }
+            #debug {
+                fill: #CCF;
+            }
+        ]]></style>
+
+        <symbol id="icon-sGH" class="icon" viewBox="0,0 54,29" preserveAspectRatio="none">
+            <rect x="0" y="0" width="54" height="29" />
+            <path d="m 21 25 0 -7.8 -6.4 0 0 -3.2 10.4 0 0 12.5 c -1.5 1.1 -3.2 1.9 -5 2.5 -1.8 0.5 -3.8 0.8 -5.9 0.8 -4.6 -0 -8.1 -1.3 -10.7 -4 -2.7 -2.7 -4 -6.4 -4 -11.2 -0 -4.8 1.3 -8.5 3.8 -11.1 2.6 -2.7 6.1 -4 10.7 -4 1.9 0 3.7 0.2 5.4 0.7 1.7 0.5 3.3 1.2 4.7 2.1 l 0 4.2 c -1.5 -1.2 -3 -2.2 -4.6 -2.8 -1.6 -0.6 -3.4 -0.9 -5.2 -0.9 -3.6 0 -6.3 1 -8 3 -1.8 2 -2.7 5 -2.7 8.9 -0 3.9 0.9 6.9 2.7 8.9 1.8 2 4.5 3 8 3 1.4 0 2.6 -0.1 3.7 -0.4 1.1 -0.2 2.1 -0.6 2.9 -1.1 m 11.3 -25.1 3.9 0 0 12 14.3 0 0 -12 3.9 0 0 29.2 -3.9 0 0 -13.9 -14.3 0 0 13.9 -3.9 0 0 -29.2" />
+        </symbol>
+        <symbol id="icon-r01" class="icon" viewBox="0,0 54,29" preserveAspectRatio="none">
+            <rect x="0" y="0" width="54" height="29" />
+            <path d="m 10 3 c -2 0 -3.6 1 -4.6 3 -1 2 -1.5 5 -1.5 9 -0 4 0.5 7 1.5 9 1 2 2.6 3 4.6 3 2 0 3.6 -1 4.6 -3 1 -2 1.5 -5 1.5 -9 -0 -4 -0.5 -7 -1.5 -9 -0.9 -1.9 -2.4 -2.9 -4.5 -2.9 m 0 -3.1 c 3.3 0 5.8 1.3 7.5 3.9 1.7 2.6 2.6 6.3 2.6 11.3 -0 4.9 -0.9 8.7 -2.6 11.3 -1.7 2.6 -4.2 3.9 -7.5 3.9 -3.3 0 -5.8 -1.3 -7.5 -3.9 -1.7 -2.6 -2.6 -6.3 -2.6 -11.3 -0 -4.9 0.9 -8.7 2.6 -11.3 1.7 -2.6 4.2 -3.9 7.5 -3.9 m 17.6 26.3 6.4 0 0 -22.2 -7 1.4 0 -3.6 7 -1.4 3.9 0 0 25.8 6.4 0 0 3.3 -16.8 0 0 -3.3" />
+        </symbol>
+        <symbol id="icon-r02" class="icon" viewBox="0,0 54,29" preserveAspectRatio="none">
+            <rect x="0" y="0" width="54" height="29" />
+            <path d="m 10 3 c -2 0 -3.6 1 -4.6 3 -1 2 -1.5 5 -1.5 9 0 4 0.5 7 1.5 9 1 2 2.6 3 4.6 3 2 0 3.6 -1 4.6 -3 1 -2 1.5 -5 1.5 -9 -0 -4 -0.5 -7 -1.5 -9 -1 -2 -2.5 -3 -4.6 -3 m 0 -3.1 c 3.3 0 5.8 1.3 7.5 3.9 1.7 2.6 2.6 6.3 2.6 11.3 -0 4.9 -0.9 8.7 -2.6 11.3 -1.7 2.6 -4.2 3.9 -7.5 3.9 -3.3 0 -5.8 -1.3 -7.5 -3.9 -1.7 -2.6 -2.6 -6.3 -2.6 -11.3 0 -4.9 0.9 -8.7 2.6 -11.3 1.7 -2.6 4.2 -3.9 7.5 -3.9 m 20.4 26.3 13.8 0 0 3.3 -18.5 0 0 -3.3 c 1.5 -1.5 3.5 -3.6 6.1 -6.2 2.6 -2.6 4.2 -4.3 4.9 -5.1 1.3 -1.4 2.1 -2.6 2.6 -3.6 0.5 -1 0.8 -2 0.8 -2.9 -0 -1.5 -0.5 -2.8 -1.6 -3.8 -1.1 -1 -2.5 -1.5 -4.2 -1.5 -1.2 0 -2.5 0.2 -3.9 0.6 -1.4 0.4 -2.8 1.1 -4.4 2 l 0 -4 c 1.6 -0.6 3.1 -1.1 4.5 -1.4 1.4 -0.3 2.6 -0.5 3.8 -0.5 3 0 5.4 0.8 7.2 2.3 1.8 1.5 2.7 3.5 2.7 6.1 -0 1.2 -0.2 2.3 -0.7 3.4 -0.4 1.1 -1.3 2.3 -2.4 3.8 -0.3 0.4 -1.4 1.5 -3.1 3.3 -1.7 1.8 -4.2 4.3 -7.4 7.6" />
+        </symbol>
+        <symbol id="icon-r03" class="icon" viewBox="0,0 54,29" preserveAspectRatio="none">
+            <rect x="0" y="0" width="54" height="29" />
+            <path d="m 10 3 c -2 0 -3.6 1 -4.6 3 -1 2 -1.5 5 -1.5 9 0 4 0.5 7 1.5 9 1 2 2.6 3 4.6 3 2 0 3.6 -1 4.6 -3 1 -2 1.5 -5 1.5 -9 -0 -4 -0.5 -7 -1.5 -9 -1 -2 -2.5 -3 -4.6 -3 m 0 -3.1 c 3.3 0 5.8 1.3 7.5 3.9 1.7 2.6 2.6 6.3 2.6 11.3 -0 4.9 -0.9 8.7 -2.6 11.3 -1.7 2.6 -4.2 3.9 -7.5 3.9 -3.3 0 -5.8 -1.3 -7.5 -3.9 -1.7 -2.6 -2.6 -6.3 -2.6 -11.3 0 -4.9 0.9 -8.7 2.6 -11.3 1.7 -2.6 4.2 -3.9 7.5 -3.9 m 29 14 c 1.9 0.4 3.4 1.2 4.4 2.5 1.1 1.3 1.6 2.9 1.6 4.7 -0 2.9 -1 5.1 -3 6.7 -2 1.6 -4.8 2.4 -8.4 2.4 -1.2 0 -2.5 -0.1 -3.8 -0.4 -1.3 -0.2 -2.6 -0.6 -4 -1.1 l 0 -3.8 c 1.1 0.6 2.3 1.1 3.6 1.4 1.3 0.3 2.7 0.5 4.1 0.5 2.5 0 4.4 -0.5 5.6 -1.5 1.3 -1 2 -2.4 2 -4.3 -0 -1.7 -0.6 -3.1 -1.8 -4 -1.2 -1 -2.9 -1.5 -5 -1.5 l -3.4 0 0 -3.2 3.6 0 c 1.9 0 3.4 -0.4 4.5 -1.2 1 -0.8 1.5 -1.9 1.5 -3.4 -0 -1.5 -0.5 -2.6 -1.6 -3.4 -1.1 -0.8 -2.6 -1.2 -4.6 -1.2 -1.1 0 -2.2 0.1 -3.5 0.4 -1.2 0.2 -2.6 0.6 -4.1 1.1 l 0 -3.5 c 1.5 -0.4 2.9 -0.7 4.2 -0.9 1.3 -0.2 2.6 -0.3 3.7 -0.3 3 0 5.4 0.7 7.1 2.1 1.7 1.4 2.6 3.2 2.6 5.5 -0 1.6 -0.5 3 -1.4 4.1 -0.9 1.1 -2.2 1.9 -3.9 2.3" />
+        </symbol>
+        <symbol id="icon-r04" class="icon" viewBox="0,0 54,29" preserveAspectRatio="none">
+            <rect x="0" y="0" width="54" height="29" />
+            <path d="m 10 3 c -2,0 -3.6,1 -4.6,3 -1,2 -1.5,5 -1.5,9 0,4,0.5,7 1.5,9,1,2 2.6 3 4.6 3 2 0 3.6 -1 4.6 -3 1 -2 1.5 -5 1.5 -9 -0 -4 -0.5 -7 -1.5 -9 -1 -2 -2.5 -3 -4.6 -3 m 0 -3.1 c 3.3 0 5.8 1.3 7.5 3.9 1.7 2.6 2.6 6.3 2.6 11.3 -0 4.9 -0.9 8.7 -2.6 11.3 -1.7 2.6 -4.2 3.9 -7.5 3.9 -3.3 0 -5.8 -1.3 -7.5 -3.9 -1.7 -2.6 -2.6 -6.3 -2.6 -11.3 0 -4.9 0.9 -8.7 2.6 -11.3 1.7 -2.6 4.2 -3.9 7.5 -3.9 m 27.9 4 -10 15.6 10 0 0 -15.6 -1 -3.4 5 0 0 19 4.2 0 0 3.3 -4.2 0 0 6.9 -3.9 0 0 -6.9 -13.2 0 0 -3.8 12.1 -18.5" />
+        </symbol>
+        <symbol id="icon-r05" class="icon" viewBox="0,0 54,29" preserveAspectRatio="none">
+            <rect x="0" y="0" width="54" height="29" />
+            <path d="m 10 3 c -2 0 -3.6 1 -4.6 3 -1 2 -1.5 5 -1.5 9 -0 4 0.5 7 1.5 9 1 2 2.6 3 4.6 3 2 0 3.6 -1 4.6 -3 1 -2 1.5 -5 1.5 -9 -0 -4 -0.5 -7 -1.5 -9 -1 -2 -2.5 -3 -4.6 -3 m 0 -3.1 c 3.3 0 5.8 1.3 7.5 3.9 1.7 2.6 2.6 6.3 2.6 11.3 -0 4.9 -0.9 8.7 -2.6 11.3 -1.7 2.6 -4.2 3.9 -7.5 3.9 -3.3 0 -5.8 -1.3 -7.5 -3.9 -1.7 -2.6 -2.6 -6.3 -2.6 -11.3 -0 -4.9 0.9 -8.7 2.6 -11.3 1.7 -2.6 4.2 -3.9 7.5 -3.9 m 17.1 0.5 15.5 0 0 3.3 -11.9 0 0 7.1 c 0.6 -0.2 1.1 -0.3 1.7 -0.4 0.6 -0.1 1.1 -0.2 1.7 -0.2 3.3 0 5.8 0.9 7.7 2.7 1.9 1.8 2.9 4.2 2.9 7.2 -0 3.1 -1 5.6 -2.9 7.3 -2 1.7 -4.7 2.6 -8.3 2.6 -1.2 0 -2.5 -0.1 -3.8 -0.3 -1.3 -0.2 -2.6 -0.5 -3.9 -0.9 l 0 -4 c 1.2 0.6 2.4 1.1 3.6 1.4 1.2 0.3 2.6 0.5 4 0.5 2.3 0 4 -0.6 5.4 -1.8 1.3 -1.2 2 -2.8 2 -4.8 -0 -2 -0.7 -3.6 -2 -4.8 -1.3 -1.2 -3.1 -1.8 -5.4 -1.8 -1.1 0 -2.1 0.1 -3.2 0.4 -1 0.2 -2.1 0.6 -3.2 1.1 l 0 -14.6" />
+        </symbol>
+        <symbol id="icon-r06" class="icon" viewBox="0,0 54,29" preserveAspectRatio="none">
+            <rect x="0" y="0" width="54" height="29" />
+            <path d="m 10 3 c -2 0 -3.6 1 -4.6 3 -1 2 -1.5 5 -1.5 9 0 4 0.5 7 1.5 9 1 2 2.6 3 4.6 3 2 0 3.6 -1 4.6 -3 1 -2 1.5 -5 1.5 -9 -0 -4 -0.5 -7 -1.5 -9 -1 -2 -2.5 -3 -4.6 -3 m 0 -3.1 c 3.3 0 5.8 1.3 7.5 3.9 1.7 2.6 2.6 6.3 2.6 11.3 -0 4.9 -0.9 8.7 -2.6 11.3 -1.7 2.6 -4.2 3.9 -7.5 3.9 -3.3 0 -5.8 -1.3 -7.5 -3.9 -1.7 -2.6 -2.6 -6.3 -2.6 -11.3 0 -4.9 0.9 -8.7 2.6 -11.3 1.7 -2.6 4.2 -3.9 7.5 -3.9 m 26 13.5 c -1.8 0 -3.2 0.6 -4.2 1.8 -1 1.2 -1.5 2.9 -1.5 5 -0 2.1 0.5 3.8 1.5 5 1 1.2 2.4 1.8 4.2 1.8 1.8 0 3.2 -0.6 4.2 -1.8 1 -1.2 1.6 -2.9 1.6 -5 -0 -2.1 -0.5 -3.8 -1.6 -5 -1 -1.2 -2.4 -1.8 -4.2 -1.8 m 7.8 -12.4 0 3.6 c -1 -0.5 -2 -0.8 -3 -1.1 -1 -0.2 -2 -0.4 -3 -0.4 -2.6 0 -4.6 0.9 -6 2.6 -1.4 1.8 -2.1 4.4 -2.3 8 0.8 -1.1 1.7 -2 2.9 -2.6 1.2 -0.6 2.4 -0.9 3.8 -0.9 2.9 0 5.2 0.9 6.9 2.7 1.7 1.8 2.6 4.2 2.6 7.2 -0 3 -0.9 5.4 -2.7 7.2 -1.8 1.8 -4.1 2.7 -7.1 2.7 -3.4 0 -6 -1.3 -7.7 -3.9 -1.8 -2.6 -2.7 -6.3 -2.7 -11.3 0 -4.6 1.1 -8.3 3.3 -11 2.2 -2.7 5.1 -4.1 8.8 -4.1 1 0 2 0.1 3 0.3 1 0.2 2.1 0.5 3.2 0.9" />
+        </symbol>
+        <symbol id="icon-r07" class="icon" viewBox="0,0 54,29" preserveAspectRatio="none">
+            <rect x="0" y="0" width="54" height="29" />
+            <path d="m 10 3 c -2 0 -3.6 1 -4.6 3 -1 2 -1.5 5 -1.5 9 0 4 0.5 7 1.5 9 1 2 2.6 3 4.6 3 2 0 3.6 -1 4.6 -3 1 -2 1.5 -5 1.5 -9 -0 -4 -0.5 -7 -1.5 -9 -1 -2 -2.5 -3 -4.6 -3 m 0 -3.1 c 3.3 0 5.8 1.3 7.5 3.9 1.7 2.6 2.6 6.3 2.6 11.3 -0 4.9 -0.9 8.7 -2.6 11.3 -1.7 2.6 -4.2 3.9 -7.5 3.9 -3.3 0 -5.8 -1.3 -7.5 -3.9 -1.7 -2.6 -2.6 -6.3 -2.6 -11.3 0 -4.9 0.9 -8.7 2.6 -11.3 1.7 -2.6 4.2 -3.9 7.5 -3.9 m 16.1 0.5 18.8 0 0 1.7 l -10.6 27.5 -4.1 0 10 -25.8 -14 0 0 -3.3" />
+        </symbol>
+        <symbol id="icon-r08" class="icon" viewBox="0,0 54,29" preserveAspectRatio="none">
+            <rect x="0" y="0" width="54" height="29" />
+            <path d="m 10 3 c -2 0 -3.6 1 -4.6 3 -1 2 -1.5 5 -1.5 9 0 4 0.5 7 1.5 9 1 2 2.6 3 4.6 3 2 0 3.6 -1 4.6 -3 1 -2 1.5 -5 1.5 -9 -0 -4 -0.5 -7 -1.5 -9 -1 -2 -2.5 -3 -4.6 -3 m 0 -3.1 c 3.3 0 5.8 1.3 7.5 3.9 1.7 2.6 2.6 6.3 2.6 11.3 -0 4.9 -0.9 8.7 -2.6 11.3 -1.7 2.6 -4.2 3.9 -7.5 3.9 -3.3 0 -5.8 -1.3 -7.5 -3.9 -1.7 -2.6 -2.6 -6.3 -2.6 -11.3 0 -4.9 0.9 -8.7 2.6 -11.3 1.7 -2.6 4.2 -3.9 7.5 -3.9 m 25.5 15.9 c -1.9 0 -3.4 0.5 -4.4 1.5 -1.1 1 -1.6 2.4 -1.6 4.1 -0 1.8 0.5 3.1 1.6 4.1 1.1 1 2.6 1.5 4.4 1.5 1.9 0 3.4 -0.5 4.4 -1.5 1.1 -1 1.6 -2.4 1.6 -4.1 -0 -1.8 -0.5 -3.1 -1.6 -4.1 -1.1 -1 -2.5 -1.5 -4.4 -1.5 m -3.9 -1.7 c -1.7 -0.4 -3 -1.2 -4 -2.4 -0.9 -1.2 -1.4 -2.6 -1.4 -4.2 -0 -2.3 0.8 -4.2 2.5 -5.5 1.7 -1.4 3.9 -2 6.8 -2 2.9 0 5.2 0.7 6.8 2 1.7 1.4 2.5 3.2 2.5 5.5 -0 1.7 -0.5 3.1 -1.4 4.2 -0.9 1.2 -2.2 1.9 -3.9 2.4 1.9 0.4 3.4 1.3 4.4 2.6 1.1 1.3 1.6 2.9 1.6 4.7 -0 2.8 -0.9 5 -2.6 6.5 -1.7 1.5 -4.2 2.3 -7.4 2.3 -3.2 0 -5.7 -0.8 -7.4 -2.3 -1.7 -1.5 -2.6 -3.7 -2.6 -6.5 0 -1.9 0.5 -3.4 1.6 -4.7 1.1 -1.3 2.6 -2.2 4.5 -2.6 m -1.4 -6.2 c -0 1.5 0.5 2.7 1.4 3.5 1 0.8 2.3 1.3 4 1.3 1.7 0 3 -0.4 4 -1.3 1 -0.8 1.4 -2 1.4 -3.5 -0 -1.5 -0.5 -2.7 -1.4 -3.5 -1 -0.8 -2.3 -1.3 -4 -1.3 -1.7 0 -3 0.4 -4 1.3 -0.9 0.8 -1.4 2 -1.4 3.5" />
+        </symbol>
+        <symbol id="icon-r09" class="icon" viewBox="0,0 54,29" preserveAspectRatio="none">
+            <rect x="0" y="0" width="54" height="29" />
+            <path d="m 10 3 c -2 0 -3.6 1 -4.6 3 -1 2 -1.5 5 -1.5 9 -0 4 0.5 7 1.5 9 1 2 2.6 3 4.6 3 2 0 3.6 -1 4.6 -3 1 -2 1.5 -5 1.5 -9 -0 -4 -0.5 -7 -1.5 -9 -1 -2 -2.5 -3 -4.6 -3 m 0 -3.1 c 3.3 0 5.8 1.3 7.5 3.9 1.7 2.6 2.6 6.3 2.6 11.3 -0 4.9 -0.9 8.7 -2.6 11.3 -1.7 2.6 -4.2 3.9 -7.5 3.9 -3.3 0 -5.8 -1.3 -7.5 -3.9 -1.7 -2.6 -2.6 -6.3 -2.6 -11.3 -0 -4.9 0.9 -8.7 2.6 -11.3 1.7 -2.6 4.2 -3.9 7.5 -3.9 m 17.2 29.1 0 -3.6 c 1 0.5 2 0.8 3 1.1 1 0.2 2 0.4 3 0.4 2.6 0 4.6 -0.9 6 -2.6 1.4 -1.8 2.2 -4.4 2.4 -8 -0.8 1.1 -1.7 2 -2.9 2.6 -1.2 0.6 -2.4 0.9 -3.8 0.9 -2.9 0 -5.2 -0.9 -6.9 -2.6 -1.7 -1.8 -2.5 -4.2 -2.5 -7.2 -0 -3 0.9 -5.4 2.7 -7.2 1.8 -1.8 4.1 -2.7 7.1 -2.7 3.4 0 5.9 1.3 7.7 3.9 1.8 2.6 2.7 6.3 2.7 11.3 -0 4.6 -1.1 8.3 -3.3 11 -2.2 2.7 -5.1 4.1 -8.8 4.1 -1 0 -2 -0.1 -3 -0.3 -1 -0.2 -2.1 -0.5 -3.2 -0.9 m 7.9 -12.4 c 1.8 0 3.2 -0.6 4.2 -1.8 1 -1.2 1.6 -2.9 1.6 -5 -0 -2.1 -0.5 -3.7 -1.6 -5 -1 -1.2 -2.4 -1.8 -4.2 -1.8 -1.8 0 -3.2 0.6 -4.2 1.8 -1 1.2 -1.5 2.9 -1.5 5 -0 2.1 0.5 3.8 1.5 5 1 1.2 2.4 1.8 4.2 1.8" />
+        </symbol>
+        <symbol id="icon-r10" class="icon" viewBox="0,0 54,29" preserveAspectRatio="none">
+            <rect x="0" y="0" width="54" height="29" />
+            <path d="m 0 26 6.4 0 0 -22.2 -7 1.4 0 -3.6 7 -1.4 3.9 0 0 25.8 6.4 0 0 3.3 -16.8 0 0 -3.3 33.3 -23.2 c -2 0 -3.6 1 -4.6 3 -1 2 -1.5 5 -1.5 9 0 4 0.5 7 1.5 9 1 2 2.6 3 4.6 3 2 0 3.6 -1 4.6 -3 1 -2 1.5 -5 1.5 -9 -0 -4 -0.5 -7 -1.5 -9 -1 -2 -2.5 -3 -4.6 -3 m 0 -3.1 c 3.3 0 5.8 1.3 7.5 3.9 1.7 2.6 2.6 6.3 2.6 11.3 -0 4.9 -0.9 8.7 -2.6 11.3 -1.7 2.6 -4.2 3.9 -7.5 3.9 -3.3 0 -5.8 -1.3 -7.5 -3.9 -1.7 -2.6 -2.6 -6.3 -2.6 -11.3 0 -4.9 0.9 -8.7 2.6 -11.3 1.7 -2.6 4.2 -3.9 7.5 -3.9" />
+        </symbol>
+        <symbol id="icon-r11" class="icon" viewBox="0,0 54,29" preserveAspectRatio="none">
+            <rect x="0" y="0" width="54" height="29" />
+            <path d="m 0 26 6.4 0 0 -22.2 -7 1.4 0 -3.6 7 -1.4 3.9 0 0 25.8 6.4 0 0 3.3 -16.8 0 0 -3.3 25.5 0 6.4 0 0 -22.2 -7 1.4 0 -3.6 7 -1.4 3.9 0 0 25.8 6.4 0 0 3.3 -16.8 0 0 -3.3" />
+        </symbol>
+        <symbol id="icon-r12" class="icon" viewBox="0,0 54,29" preserveAspectRatio="none">
+            <rect x="0" y="0" width="54" height="29" />
+            <path d="m 0 26 6.4 0 0 -22.2 -7 1.4 0 -3.6 7 -1.4 3.9 0 0 25.8 6.4 0 0 3.3 -16.8 0 0 -3.3 28.2 0 13.8 0 0 3.3 -18.5 0 0 -3.3 c 1.5 -1.5 3.5 -3.6 6.1 -6.2 2.6 -2.6 4.2 -4.3 4.9 -5.1 1.3 -1.4 2.1 -2.6 2.6 -3.6 0.5 -1 0.8 -2 0.8 -2.9 -0 -1.5 -0.5 -2.8 -1.6 -3.8 -1.1 -1 -2.5 -1.5 -4.2 -1.5 -1.2 0 -2.5 0.2 -3.9 0.6 -1.4 0.4 -2.8 1.1 -4.4 2 l 0 -4 c 1.6 -0.6 3.1 -1.1 4.5 -1.4 1.4 -0.3 2.6 -0.5 3.8 -0.5 3 0 5.4 0.8 7.2 2.3 1.8 1.5 2.7 3.5 2.7 6.1 -0 1.2 -0.2 2.3 -0.7 3.4 -0.4 1.1 -1.3 2.3 -2.4 3.8 -0.3 0.4 -1.4 1.5 -3.1 3.3 -1.7 1.8 -4.2 4.3 -7.4 7.6" />
+        </symbol>
+        <symbol id="icon-r13" class="icon" viewBox="0,0 54,29" preserveAspectRatio="none">
+            <rect x="0" y="0" width="54" height="29" />
+            <path d="m 0 26 6.4 0 0 -22.2 -7 1.4 0 -3.6 7 -1.4 3.9 0 0 25.8 6.4 0 0 3.3 -16.8 0 0 -3.3 36.8 -12.3 c 1.9 0.4 3.4 1.2 4.4 2.5 1.1 1.3 1.6 2.9 1.6 4.7 -0 2.9 -1 5.1 -3 6.7 -2 1.6 -4.8 2.4 -8.4 2.4 -1.2 0 -2.5 -0.1 -3.8 -0.4 -1.3 -0.2 -2.6 -0.6 -4 -1.1 l 0 -3.8 c 1.1 0.6 2.3 1.1 3.6 1.4 1.3 0.3 2.7 0.5 4.1 0.5 2.5 0 4.4 -0.5 5.6 -1.5 1.3 -1 2 -2.4 2 -4.3 -0 -1.7 -0.6 -3.1 -1.8 -4 -1.2 -1 -2.9 -1.5 -5 -1.5 l -3.4 0 0 -3.2 3.6 0 c 1.9 0 3.4 -0.4 4.5 -1.2 1 -0.8 1.5 -1.9 1.5 -3.4 -0 -1.5 -0.5 -2.6 -1.6 -3.4 -1.1 -0.8 -2.6 -1.2 -4.6 -1.2 -1.1 0 -2.2 0.1 -3.5 0.4 -1.2 0.2 -2.6 0.6 -4.1 1.1 l 0 -3.5 c 1.5 -0.4 2.9 -0.7 4.2 -0.9 1.3 -0.2 2.6 -0.3 3.7 -0.3 3 0 5.4 0.7 7.1 2.1 1.7 1.4 2.6 3.2 2.6 5.5 -0 1.6 -0.5 3 -1.4 4.1 -0.9 1.1 -2.2 1.9 -3.9 2.3" />
+        </symbol>
+        <symbol id="icon-r14" class="icon" viewBox="0,0 54,29" preserveAspectRatio="none">
+            <rect x="0" y="0" width="54" height="29" />
+            <path d="m 0 26 6.4,0 0,-22.2 -7,1.4 0,-3.6 7,-1.4 3.9,0 0,25.8 6.4,0 0,3.3 -16.8,0 0,-3.3 35.7,-22.3 m -10,15.6 10,0 0,-15.6 -1,-3.4 5,0 0,19 4.2,0 0,3.3 -4.2,0 0,6.9 -3.9,0 0,-6.9 -13.2,0 0,-3.8 12.1,-18.5" />
+        </symbol>
+        <symbol id="icon-rUN" class="icon" viewBox="0,0 29,29" preserveAspectRatio="none">
+            <rect x="0" y="0" width="29" height="29" />
+            <path d="m 12 25 4 0 0 5 -4 0 0 -5 3.8 -2.9 -3.7 0 0 -3 c -0 -1.3 0.2 -2.4 0.5 -3.2 0.4 -0.8 1.1 -1.8 2.3 -2.9 l 1.8 -1.7 c 0.7 -0.7 1.3 -1.3 1.6 -2 0.3 -0.6 0.5 -1.2 0.5 -1.9 -0 -1.2 -0.4 -2.1 -1.3 -2.8 -0.8 -0.7 -2 -1.1 -3.4 -1.1 -1 0 -2.1 0.2 -3.3 0.7 -1.2 0.5 -2.4 1.1 -3.6 2 l 0 -3.7 c 1.2 -0.7 2.5 -1.3 3.7 -1.7 1.3 -0.4 2.6 -0.5 3.9 -0.5 2.4 0 4.3 0.6 5.8 1.9 1.5 1.3 2.2 2.9 2.2 5 -0 1 -0.2 1.9 -0.7 2.8 -0.5 0.9 -1.3 1.9 -2.5 3 l -1.7 1.7 c -0.6 0.6 -1 1.1 -1.3 1.4 -0.2 0.3 -0.4 0.7 -0.5 1 -0.1 0.3 -0.1 0.6 -0.2 1 -0 0.4 -0.1 0.9 -0.1 1.6 l 0 2.4" />
+        </symbol>
+    </defs>
+    <script type="text/ecmascript"><![CDATA[
+        var NS = {
+                svg:    'http://www.w3.org/2000/svg',
+                xlink:  'http://www.w3.org/1999/xlink'
+            },
+            SYSTEMS = {
+                sAS: {
+                    id: 'sAS',
+                    name: 'Asteroid System',
+                    sector: '11',
+                    raceID: null
+                },
+                sCW: {
+                    id: 'sCW',
+                    name: 'Colony World',
+                    sector: '00',
+                    raceID: null
+                },
+                sDW: {
+                    id: 'sDW',
+                    name: 'Desert World',
+                    sector: '10',
+                    raceID: null
+                },
+                sGH: {
+                    id: 'sGH',
+                    name: 'Galactic Hub',
+                    sector: '11',
+                    raceID: 'rGH'
+                },
+                sGP: {
+                    id: 'sGP',
+                    name: 'Giant Planet',
+                    sector: '11',
+                    raceID: null
+                },
+                sIB: {
+                    id: 'sIB',
+                    name: 'Intersteller Biosphere',
+                    sector: '00',
+                    raceID: null
+                },
+                sIM: {
+                    id: 'sIM',
+                    name: 'Inhabited Moon',
+                    sector: '20',
+                    raceID: null
+                },
+                sIW: {
+                    id: 'sIW',
+                    name: 'Ice World',
+                    sector: '01',
+                    raceID: null
+                },
+                sJW: {
+                    id: 'sJW',
+                    name: 'Jungle World',
+                    sector: '10',
+                    raceID: null
+                },
+                sMS: {
+                    id: 'sMS',
+                    name: 'Multi-Generational Ship',
+                    sector: '21',
+                    raceID: null
+                },
+                sNH: {
+                    id: 'sNH',
+                    name: 'Nebula Habitat',
+                    sector: '10',
+                    raceID: null
+                },
+                sPP: {
+                    id: 'sPP',
+                    name: 'Poluted Planet',
+                    sector: '10',
+                    raceID: null
+                },
+                sRP: {
+                    id: 'sRP',
+                    name: 'Trapped Rogue Planet',
+                    sector: '00',
+                    raceID: null
+                },
+                sSG: {
+                    id: 'sSG',
+                    name: 'Supergiant',
+                    sector: '01',
+                    hazard: true
+                },
+                sSN: {
+                    id: 'sSN',
+                    name: 'Supernova',
+                    sector: '10',
+                    hazard: true
+                },
+                sWS: {
+                    id: 'sWS',
+                    name: 'War-Torn System',
+                    sector: '21',
+                    raceID: null
+                },
+                sWW: {
+                    id: 'sWW',
+                    name: 'Water World',
+                    sector: '20',
+                    raceID: null
+                }
+            },
+            RACES = {
+                r01: {
+                    id: 'r01',
+                    name: 'Nillis',
+                    goods: 'FUTURE',
+                    techCommon: 'FUTURE',
+                    techRacial: 'FUTURE',
+                    systemID: null,
+                    fairs: 'FUTURE',
+                    demands: 'FUTURE'
+                },
+                r02: {
+                    id: 'r02',
+                    name: 'Volois',
+                    goods: 'FUTURE',
+                    techCommon: 'FUTURE',
+                    techRacial: 'FUTURE',
+                    systemID: null,
+                    fairs: 'FUTURE',
+                    demands: 'FUTURE'
+                },
+                r03: {
+                    id: 'r03',
+                    name: 'Graw',
+                    goods: 'FUTURE',
+                    techCommon: 'FUTURE',
+                    techRacial: 'FUTURE',
+                    systemID: null,
+                    fairs: 'FUTURE',
+                    demands: 'FUTURE'
+                },
+                r04: {
+                    id: 'r04',
+                    name: 'Niks',
+                    goods: 'FUTURE',
+                    techCommon: 'FUTURE',
+                    techRacial: 'FUTURE',
+                    systemID: null,
+                    fairs: 'FUTURE',
+                    demands: 'FUTURE'
+                },
+                r05: {
+                    id: 'r05',
+                    name: 'Dell',
+                    goods: 'FUTURE',
+                    techCommon: 'FUTURE',
+                    techRacial: 'FUTURE',
+                    systemID: null,
+                    fairs: 'FUTURE',
+                    demands: 'FUTURE'
+                },
+                r06: {
+                    id: 'r06',
+                    name: 'Humans',
+                    goods: 'FUTURE',
+                    techCommon: 'FUTURE',
+                    techRacial: 'FUTURE',
+                    systemID: null,
+                    fairs: 'FUTURE',
+                    demands: 'FUTURE'
+                },
+                r07: {
+                    id: 'r07',
+                    name: 'Shenna',
+                    goods: 'FUTURE',
+                    techCommon: 'FUTURE',
+                    techRacial: 'FUTURE',
+                    systemID: null,
+                    fairs: 'FUTURE',
+                    demands: 'FUTURE'
+                },
+                r08: {
+                    id: 'r08',
+                    name: 'Yxklyx',
+                    goods: 'FUTURE',
+                    techCommon: 'FUTURE',
+                    techRacial: 'FUTURE',
+                    systemID: null,
+                    fairs: 'FUTURE',
+                    demands: 'FUTURE'
+                },
+                r09: {
+                    id: 'r09',
+                    name: 'Zum',
+                    goods: 'FUTURE',
+                    techCommon: 'FUTURE',
+                    techRacial: 'FUTURE',
+                    systemID: null,
+                    fairs: 'FUTURE',
+                    demands: 'FUTURE'
+                },
+                r10: {
+                    id: 'r10',
+                    name: 'Eeepeeep',
+                    goods: 'FUTURE',
+                    techCommon: 'FUTURE',
+                    techRacial: 'FUTURE',
+                    systemID: null,
+                    fairs: 'FUTURE',
+                    demands: 'FUTURE'
+                },
+                r11: {
+                    id: 'r11',
+                    name: 'Whynoms',
+                    goods: 'FUTURE',
+                    techCommon: 'FUTURE',
+                    techRacial: 'FUTURE',
+                    systemID: null,
+                    fairs: 'FUTURE',
+                    demands: 'FUTURE'
+                },
+                r12: {
+                    id: 'r12',
+                    name: 'Cholos',
+                    goods: 'FUTURE',
+                    techCommon: 'FUTURE',
+                    techRacial: 'FUTURE',
+                    systemID: null,
+                    fairs: 'FUTURE',
+                    demands: 'FUTURE'
+                },
+                r13: {
+                    id: 'r13',
+                    name: 'Wollow',
+                    goods: 'FUTURE',
+                    techCommon: 'FUTURE',
+                    techRacial: 'FUTURE',
+                    systemID: null,
+                    fairs: 'FUTURE',
+                    demands: 'FUTURE'
+                },
+                r14: {
+                    id: 'r14',
+                    name: 'Qossoth',
+                    goods: 'FUTURE',
+                    techCommon: 'FUTURE',
+                    techRacial: 'FUTURE',
+                    systemID: null,
+                    fairs: 'FUTURE',
+                    demands: 'FUTURE'
+                }
+            },
+            ROUTES = {
+                // TODO -- this is the biggy
+                // estimated at 91 routes (14*13/2)
+                // id: route-{a}-{b} ({a} and {b} always lexicographically sorted)
+                /*
+                    id
+                    systemA
+                    systemB
+                    distance
+                    enabled         [dynamic]
+                    direction       [dynamic]
+                    buy             [dynamic]
+                    sell            [dynamic]
+                    net             [dynamic]
+                */
+            },
+            GAME = {
+                showRouteBuy: true,
+                showRouteSell: true,
+                showRouteNet: true,
+                showRouteBlackMarket: false,
+                maxRouteDistance: 12,
+                enableFairs: false,
+                enableDemands: false,
+                showNamesSystems: false,
+                showNamesRaces: false
+            };
+
+
+        function objectEach(obj, cb) {
+            Object.keys(obj).forEach(function (key) {
+                cb(key, obj[key]);
+            });
+        }
+
+
+        // displays race chooser popup
+        // calls callback with chosen race
+        function racePopup(races, callback) {
+            // TODO
+            var chosen = Math.floor(Math.random() * (races.length + 1));
+            if (chosen === races.length) {
+                callback(null);
+                return;
+            }
+            callback(races[chosen]);
+        }
+
+
+        function thumbIconSet(oldThumb, iconID) {
+            // This is the only way I've found that works on Chrome.
+            var newThumb = oldThumb.cloneNode(true);
+            newThumb.setAttributeNS(NS.xlink, 'href', '#icon-' + iconID);
+            oldThumb.parentElement.replaceChild(newThumb, oldThumb);
+        }
+
+
+        function systemRaceSet(systemID, raceID) {
+            var system = SYSTEMS[systemID],
+                race,
+                systemUI,
+                thumbUI;
+            system.raceID = raceID;
+            if (raceID) {
+                race = RACES[raceID];
+                race.systemID = systemID;
+            }
+            systemUI = document.documentElement.getElementById(systemID);
+            thumbUI = systemUI.getElementsByClassName('thumb')[0];
+            thumbIconSet(thumbUI, raceID || 'rUN');
+        }
+
+
+        // handles system thumbnail click
+        function systemThumbClick(evt, systemID) {
+            evt.preventDefault();
+            evt.stopPropagation();
+
+            var system = SYSTEMS[systemID];
+            var raceID = system.raceID;
+            // unset, to normalize to first-choice algorithm
+            if (raceID) {
+                system.raceID = null;
+                RACES[raceID].systemID = null;
+            }
+
+            var races = [];
+            objectEach(RACES, function(raceID, race) {
+                if (! race.systemID) {
+                    races.push(raceID);
+                }
+            });
+            racePopup(races, function(raceID) {
+                systemRaceSet(systemID, raceID);
+            });
+        }
+
+    ]]></script>
+
+
+    <rect id="background" x="0" y="0" width="1440" height="800"/>
+
+    <g id="map">
+<!-- DEBUGGING
+        <image id="jpeg" xlink:href="mov-large.jpg" x="0" y="0" width="1200" height="800"/>
+        <line class="grid" x1="400" x2="400" y1="0" y2="800" />
+        <line class="grid" x1="800" x2="800" y1="0" y2="800" />
+        <line class="grid" x1="0" x2="1200" y1="400" y2="400" />
+-->
+
+        <path class="path" d="M 146,35 C 260,14 315,26 369,86" />
+        <path class="path" d="m 229,108 c 77,-61 96,-32 81,47" />
+        <path class="path" d="m 109,209 c -132,157 -59,227 13,249" />
+        <path class="path" d="m 352,337 c 24,32 48,64 69,99" />
+        <path class="path" d="m 284,354 c 113,24 11,149 131,102" />
+        <path class="path" d="m 202,429 c 100,75 212,85 333,53" />
+        <path class="path" d="m 234,543 c 30,-30 60,-17 90,35" />
+        <path class="path" d="m 382,548 c 39,-28 84,-21 131,2" />
+        <path class="path" d="m 86,598 c -74,23 -62,177 12,109" />
+        <path class="path" d="M 403,610 C 521,590 517,641 441,734" />
+        <path class="path" d="m 295,724 c 184,-165 -43,152 146,10" />
+        <path class="path" d="M 585,54 C 619,37 652,36 683,63" />
+        <path class="path" d="M 735,117 C 702,128 679,145 685,176" />
+        <path class="path" d="m 581,130 c 29,12 59,24 0,56" />
+        <path class="path" d="M 548,264 C 544,225 530,178 581,185" />
+        <path class="path" d="M 669,246 C 640,217 610,198 581,184" />
+        <path class="path" d="m 430,230 c 33,8 57,25 63,61" />
+        <path class="path" d="m 679,560 c 98,-44 99,61 217,13" />
+        <path class="path" d="m 642,390 c 78,2 156,7 236,43" />
+        <path class="path" d="m 797,291 c 55,35 73,85 81,141" />
+        <path class="path" d="M 794,57 C 830,30 879,11 985,27" />
+        <path class="path" d="m 1059,157 c 28,48 30,94 -14,138" />
+        <path class="path" d="m 971,152 c -1,35 -10,60 -39,65" />
+        <path class="path" d="m 858,185 c 18,0 39,4 75,32" />
+        <path class="path" d="M 970,318 C 971,281 960,246 931,216" />
+        <path class="path" d="m 895,572 c 20,31 54,48 94,60" />
+        <path class="path" d="m 1056,448 c -107,142 131,75 41,188" />
+        <path class="path" d="m 878,732 c 26,27 62,43 130,27" />
+        <path class="path" d="m 433,432 c 5,-22 19,-40 52,-49" />
+
+        <g id="sAS" class="system" >
+            <path class="boundary" d="m 440,734 c 54,0 172,-72 172,-72 0,0 70,-75 117,-77 60,0 161,83 161,83 0,0 -12,64 -12,64 -69,64 -279,32 -279,32 0,0 -99,31 -159,-30 z" />
+            <use class="thumb" x="720" y="670" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick(event, 'sAS');" />
+        </g>
+        <g id="sCW" class="system" >
+            <ellipse class="boundary" cx="181" cy="353" rx="103" ry="78" />
+            <use class="thumb" x="165" y="338" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick(event, 'sCW');" />
+        </g>
+        <g id="sDW" class="system" >
+            <ellipse class="boundary" cx="484" cy="90" rx="115" ry="75" />
+            <use class="thumb" x="469" y="75" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick(event, 'sDW');" />
+        </g>
+        <g id="sGH" class="system" >
+            <use class="thumb" x="414" y="433" width="30" height="30" xlink:href="#icon-sGH" />
+        </g>
+        <g id="sGP" class="system" >
+            <ellipse class="boundary" cx="608" cy="520" rx="80" ry="103" transform="rotate(50 608,520)" />
+            <use class="thumb" x="593"  y="505" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick(event, 'sGP');" />
+        </g>
+        <g id="sIB" class="system" >
+            <ellipse class="boundary" cx="348" cy="245" rx="100" ry="80" transform="rotate(55 348,245)" />
+            <use class="thumb" x="333" y="230" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick(event, 'sIB');" />
+        </g>
+        <g id="sIM" class="system" >
+            <ellipse class="boundary" cx="1027" cy="91" rx="105" ry="70" />
+            <use class="thumb" x="1012" y="76" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick(event, 'sIM');" />
+        </g>
+        <g id="sIW" class="system" >
+            <ellipse class="boundary" cx="197" cy="714" rx="99" ry="70" />
+            <use class="thumb" x="182" y="699" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick(event, 'sIW');" />
+        </g>
+        <g id="sJW" class="system" >
+            <ellipse class="boundary" cx="140" cy="534" rx="95" ry="77" />
+            <use class="thumb" x="125" y="519" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick(event, 'sJW');" />
+        </g>
+        <g id="sMS" class="system" >
+            <ellipse class="boundary" cx="885" cy="503" rx="90" ry="70" />
+            <use class="thumb" x="870" y="488" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick(event, 'sMS');" />
+        </g>
+        <g id="sNH" class="system" >
+            <ellipse class="boundary" cx="567" cy="341" rx="96" ry="78" />
+            <use class="thumb" x="552" y="326" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick(event, 'sNH');" />
+        </g>
+        <g id="sPP" class="system" >
+            <ellipse class="boundary" cx="1041" cy="372" rx="102" ry="77" />
+            <use class="thumb" x="1026" y="357" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick(event, 'sPP');" />
+        </g>
+        <g id="sRP" class="system" >
+            <ellipse class="boundary" cx="142" cy="128" rx="108" ry="85" transform="rotate(45 142,128)" />
+            <use class="thumb" x="127" y="113" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick(event, 'sRP');" />
+        </g>
+        <g id="sSG" class="system hazard" >
+            <ellipse class="boundary" cx="363" cy="593" rx="42" ry="50" />
+        </g>
+        <g id="sSN" class="system hazard" >
+            <ellipse class="boundary" cx="740" cy="73" rx="58" ry="44" />
+        </g>
+        <g id="sWS" class="system" >
+            <ellipse class="boundary" cx="1038" cy="693" rx="105" ry="69" />
+            <use class="thumb" x="1023" y="678" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick(event, 'sWS');" />
+        </g>
+        <g id="sWW" class="system" >
+            <ellipse class="boundary" cx="767" cy="221" rx="104" ry="73" />
+            <use class="thumb" x="752" y="206" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick(event, 'sWW');" />
+        </g>
+    </g>
+
+    <g id="routes">
+        <!-- TODO -->
+    </g>
+
+    <foreignObject x="1200" y="10" width="200" height="400">
+        <div xmlns="http://www.w3.org/1999/xhtml">
+        <b>TODO</b> <br/>
+        * system config popup <br/>
+        <br/>
+        * map: routes <br/>
+        * routes calculations <br/>
+        * game config popup <br/>
+        <br/>
+        * nice icons <br/>
+        * map: system names <br/>
+        * map: race names <br/>
+        </div>
+<!--
+        FUTURE
+            * review game pieces for considerations (tech, encounter cards, etc)
+            * mark routes with navigation points (and required pilot numbers)
+            * fairs (game-level popup)
+            * demands (game-level popup)
+            * tech (system-level popup)
+            * black market
+            * telegates? (they affect route distances, if usable)
+            * rotatable UI (for tablets)
+            * rotate fairs (special encounter card)
+            * see if HTML5 pushState() works here
+-->
+    </foreignObject>
+
+<!-- DEBUGGING
+    <line id="crossx" x1="600" x2="600" y1="0" y2="800" />
+    <line id="crossy" x1="0" x2="1200" y1="400" y2="400" />
+    <text id="debug" x="1200" y="780">...</text>
+    <script type="text/ecmascript"><![CDATA[
+        var jpeg = document.getElementById('jpeg');
+        var crossx = document.getElementById('crossx');
+        var crossy = document.getElementById('crossy');
+        var debug = document.getElementById('debug');
+        jpeg.addEventListener('mousemove', function(evt) {
+            debug.textContent = evt.offsetX + ',' + evt.offsetY;
+            crossx.x1.baseVal.value = crossx.x2.baseVal.value = evt.offsetX;
+            crossy.y1.baseVal.value = crossy.y2.baseVal.value = evt.offsetY;
+        });
+    ]]></script>
+-->
+
+</svg>
