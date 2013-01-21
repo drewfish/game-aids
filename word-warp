@@ -1,0 +1,83 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+my $DICT = '/usr/share/dict/words';
+
+
+sub find_in_dict
+{
+    my $words = shift || die;   # arrayref
+    my %dict;
+    open(DICT,$DICT) or die("FAILED to open $DICT");
+    foreach my $dict ( <DICT> )
+    {
+        chomp $dict;
+        $dict{$dict} = 1;
+    }
+    close(DICT) or die("FAILED to close $DICT");
+    my %found;
+    foreach my $word ( sort @$words )
+    {
+        $found{$word} = 1 if $dict{$word};
+    }
+    print $_, "\n" foreach sort keys %found;
+}
+
+
+sub gen_combos
+{
+    my $word = shift || die;;
+    my @letters = split //, $word;
+    my @combos;
+    for (my $l0 = 0; $l0 < 6; $l0++)
+    {
+        my $l0_val = $letters[$l0];
+        next unless $l0_val;
+        my @l0_rest = @letters;
+        splice(@l0_rest, $l0, 1);
+        for (my $l1 = 0; $l1 < 5; $l1++)
+        {
+            my $l1_val = $l0_rest[$l1];
+            next unless $l1_val;
+            my @l1_rest = @l0_rest;
+            splice(@l1_rest, $l1, 1);
+            for (my $l2 = 0; $l2 < 4; $l2++)
+            {
+                my $l2_val = $l1_rest[$l2];
+                next unless $l2_val;
+                my @l2_rest = @l1_rest;
+                splice(@l2_rest, $l2, 1);
+                push @combos, $l0_val . $l1_val . $l2_val;
+                for (my $l3 = 0; $l3 < 3; $l3++)
+                {
+                    my $l3_val = $l2_rest[$l3];
+                    next unless $l3_val;
+                    my @l3_rest = @l2_rest;
+                    splice(@l3_rest, $l3, 1);
+                    push @combos, $l0_val . $l1_val . $l2_val . $l3_val;
+                    push @combos, $l0_val . $l1_val . $l2_val . $l3_val . $l3_rest[0] if $l3_rest[0];
+                    push @combos, $l0_val . $l1_val . $l2_val . $l3_val . $l3_rest[1]  if $l3_rest[1];
+                    if ($l3_rest[0] and $l3_rest[1]) {
+                        push @combos, $l0_val . $l1_val . $l2_val . $l3_val . $l3_rest[0] . $l3_rest[1];
+                        push @combos, $l0_val . $l1_val . $l2_val . $l3_val . $l3_rest[1] . $l3_rest[0];
+                    }
+                }
+            }
+        }
+    }
+    return \@combos;
+}
+
+
+sub main
+{
+    my $letters = shift(@ARGV) || die("MISSING letters\n");
+    my $combos = gen_combos($letters);
+#   print $_, "\n" foreach sort @$combos;
+    find_in_dict($combos);
+}
+main();
+
+
