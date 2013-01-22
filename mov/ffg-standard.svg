@@ -170,8 +170,7 @@ To the extent possible under law, Drew Folta has waived all copyright and relate
                 sGH: {
                     id: 'sGH',
                     name: 'Galactic Hub',
-                    sector: '11',
-                    raceID: 'rGH'
+                    sector: '11'
                 },
                 sGP: {
                     id: 'sGP',
@@ -485,6 +484,13 @@ To the extent possible under law, Drew Folta has waived all copyright and relate
                 race,
                 systemUI,
                 thumbUI;
+
+            // unset old race
+            race = RACES[system.raceID];
+            if (race) {
+                race.systemID = null;
+            }
+
             system.raceID = raceID;
             if (raceID) {
                 race = RACES[raceID];
