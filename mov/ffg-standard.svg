@@ -1,10 +1,67 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
 PURPOSE
-In-game aid to help a player visualize possible trade routes.
+    In-game aid to present information to the player so that s/he can more
+    easily/quickly make decisions about possible trade routes.
+    In general, it is expected that the player will still spend much more
+    time studying the board than this tool.
+
+NON-PURPOSES
+    * make decisions for player, or suggest courses of action
+    * contain all information
+    * replace the board or pieces on it
 
 LICENSE
-To the extent possible under law, Drew Folta has waived all copyright and related or neighboring rights to this work.
+    To the extent possible under law, Drew Folta has waived all copyright and
+    related or neighboring rights to this work.
+
+TODO
+    * routes
+    * game config popup
+    * nice icons
+    * map: system names
+    * map: race names
+
+FUTURE
+    * at least attempt to get working in other browsers (besides Chrome)
+    * routes automagically snake between systems
+    * mark routes with navigation points (and required pilot numbers)
+    * fairs (set in separate game-level popup)
+    * demands (set in separate game-level popup)
+    * tech (set in system-level popup)
+    * black market
+    * telegates? (they affect route distances, if usable)
+    * rotatable UI (for tablets)
+    * rotate fairs (special encounter card)
+    * see if HTML5 pushState() works here
+    * per-race flag icon (player set, for missions or other reasons)
+
+
+ROUTES
+    each system has a number of "route points" around the thumb
+        box or star
+
+    algorithm
+        consider all enabled routes (to center of other side)
+        match to nearset routepoint
+        handle case where multiple routes mat to same routepoint
+            calculate alternatives, and "stretch" of each alternative
+
+    each system can have up to -7- routes
+        5 goods
+        1 to GH for fairs
+        1 for black market
+
+    DECORATIONS
+        buy             source
+        sell            sink
+        net             sink
+        demands         sink
+        fairs           sink
+        nav points      middle
+        telegates       middle
+        black market    entire
+
 -->
 <svg 
     xmlns:svg="http://www.w3.org/2000/svg"
@@ -53,6 +110,10 @@ To the extent possible under law, Drew Folta has waived all copyright and relate
                 stroke: #004;
                 stroke-width: 3;
             }
+            .popup .disabled {
+                opacity: 0.4;
+            }
+
             .popup text {
                 fill: #00E;
                 text-anchor: middle;
@@ -255,8 +316,13 @@ To the extent possible under law, Drew Folta has waived all copyright and relate
                 r01: {
                     id: 'r01',
                     name: 'Nillis',
-                    goods: 'FUTURE',
-                    techCommon: 'FUTURE',
+                    good: {
+                        name: 'Bionic Perfume',
+                        buy: 80,
+                        sell: 140,
+                        sellAtNext: 4
+                    },
+                    techCommon: [ 'yellow', 'cargo' ],
                     techRacial: 'FUTURE',
                     systemID: null,
                     fairs: 'FUTURE',
@@ -265,8 +331,13 @@ To the extent possible under law, Drew Folta has waived all copyright and relate
                 r02: {
                     id: 'r02',
                     name: 'Volois',
-                    goods: 'FUTURE',
-                    techCommon: 'FUTURE',
+                    good: {
+                        name: 'Canned Traits',
+                        buy: 140,
+                        sell: 220,
+                        sellAtNext: 4
+                    },
+                    techCommon: [ 'red', 'cargo' ],
                     techRacial: 'FUTURE',
                     systemID: null,
                     fairs: 'FUTURE',
@@ -275,8 +346,13 @@ To the extent possible under law, Drew Folta has waived all copyright and relate
                 r03: {
                     id: 'r03',
                     name: 'Graw',
-                    goods: 'FUTURE',
-                    techCommon: 'FUTURE',
+                    good: {
+                        name: 'Glorious Junk',
+                        buy: 30,
+                        sell: 80,
+                        sellAtNext: 4
+                    },
+                    techCommon: [ 'yellow', 'shield' ],
                     techRacial: 'FUTURE',
                     systemID: null,
                     fairs: 'FUTURE',
@@ -285,8 +361,13 @@ To the extent possible under law, Drew Folta has waived all copyright and relate
                 r04: {
                     id: 'r04',
                     name: 'Niks',
-                    goods: 'FUTURE',
-                    techCommon: 'FUTURE',
+                    good: {
+                        name: 'Living Toys',
+                        buy: 20,
+                        sell: 60,
+                        sellAtNext: 4
+                    },
+                    techCommon: [ 'yellow', 'cargo' ],
                     techRacial: 'FUTURE',
                     systemID: null,
                     fairs: 'FUTURE',
@@ -295,8 +376,13 @@ To the extent possible under law, Drew Folta has waived all copyright and relate
                 r05: {
                     id: 'r05',
                     name: 'Dell',
-                    goods: 'FUTURE',
-                    techCommon: 'FUTURE',
+                    good: {
+                        name: 'Finest Dust',
+                        buy: 10,
+                        sell: 50,
+                        sellAtNext: 4
+                    },
+                    techCommon: [ 'red', 'cargo' ],
                     techRacial: 'FUTURE',
                     systemID: null,
                     fairs: 'FUTURE',
@@ -305,8 +391,13 @@ To the extent possible under law, Drew Folta has waived all copyright and relate
                 r06: {
                     id: 'r06',
                     name: 'Humans',
-                    goods: 'FUTURE',
-                    techCommon: 'FUTURE',
+                    good: {
+                        name: 'Rock Videos',
+                        buy: 120,
+                        sell: 200,
+                        sellAtNext: 4
+                    },
+                    techCommon: [ 'red', 'shield' ],
                     techRacial: 'FUTURE',
                     systemID: null,
                     fairs: 'FUTURE',
@@ -315,8 +406,13 @@ To the extent possible under law, Drew Folta has waived all copyright and relate
                 r07: {
                     id: 'r07',
                     name: 'Shenna',
-                    goods: 'FUTURE',
-                    techCommon: 'FUTURE',
+                    good: {
+                        name: 'Melf Pelts',
+                        buy: 50,
+                        sell: 110,
+                        sellAtNext: 4
+                    },
+                    techCommon: [ 'red', 'shield' ],
                     techRacial: 'FUTURE',
                     systemID: null,
                     fairs: 'FUTURE',
@@ -325,8 +421,13 @@ To the extent possible under law, Drew Folta has waived all copyright and relate
                 r08: {
                     id: 'r08',
                     name: 'Yxklyx',
-                    goods: 'FUTURE',
-                    techCommon: 'FUTURE',
+                    good: {
+                        name: 'Immortal Grease',
+                        buy: 50,
+                        sell: 100,
+                        sellAtNext: 5
+                    },
+                    techCommon: [ 'yellow', 'laser' ],
                     techRacial: 'FUTURE',
                     systemID: null,
                     fairs: 'FUTURE',
@@ -335,8 +436,13 @@ To the extent possible under law, Drew Folta has waived all copyright and relate
                 r09: {
                     id: 'r09',
                     name: 'Zum',
-                    goods: 'FUTURE',
-                    techCommon: 'FUTURE',
+                    good: {
+                        name: 'Chicle Liquor',
+                        buy: 40,
+                        sell: 90,
+                        sellAtNext: 4
+                    },
+                    techCommon: [ 'red', 'shield' ],
                     techRacial: 'FUTURE',
                     systemID: null,
                     fairs: 'FUTURE',
@@ -345,8 +451,13 @@ To the extent possible under law, Drew Folta has waived all copyright and relate
                 r10: {
                     id: 'r10',
                     name: 'Eeepeeep',
-                    goods: 'FUTURE',
-                    techCommon: 'FUTURE',
+                    good: {
+                        name: 'Pedigree Bolts',
+                        buy: 200,
+                        sell: 300,
+                        sellAtNext: 4
+                    },
+                    techCommon: [ 'combo', 'laser' ],
                     techRacial: 'FUTURE',
                     systemID: null,
                     fairs: 'FUTURE',
@@ -355,8 +466,13 @@ To the extent possible under law, Drew Folta has waived all copyright and relate
                 r11: {
                     id: 'r11',
                     name: 'Whynoms',
-                    goods: 'FUTURE',
-                    techCommon: 'FUTURE',
+                    good: {
+                        name: 'Impossible Furniture',
+                        buy: 110,
+                        sell: 180,
+                        sellAtNext: 5
+                    },
+                    techCommon: [ 'yellow', 'cargo' ],
                     techRacial: 'FUTURE',
                     systemID: null,
                     fairs: 'FUTURE',
@@ -365,8 +481,13 @@ To the extent possible under law, Drew Folta has waived all copyright and relate
                 r12: {
                     id: 'r12',
                     name: 'Cholos',
-                    goods: 'FUTURE',
-                    techCommon: 'FUTURE',
+                    good: {
+                        name: 'Designer Genes',
+                        buy: 60,
+                        sell: 120,
+                        sellAtNext: 4
+                    },
+                    techCommon: [ 'yellow', 'cargo' ],
                     techRacial: 'FUTURE',
                     systemID: null,
                     fairs: 'FUTURE',
@@ -375,8 +496,13 @@ To the extent possible under law, Drew Folta has waived all copyright and relate
                 r13: {
                     id: 'r13',
                     name: 'Wollow',
-                    goods: 'FUTURE',
-                    techCommon: 'FUTURE',
+                    good: {
+                        name: 'Megalith Paperweight',
+                        buy: 90,
+                        sell: 160,
+                        sellAtNext: 4
+                    },
+                    techCommon: [ 'yellow', 'shield' ],
                     techRacial: 'FUTURE',
                     systemID: null,
                     fairs: 'FUTURE',
@@ -385,8 +511,13 @@ To the extent possible under law, Drew Folta has waived all copyright and relate
                 r14: {
                     id: 'r14',
                     name: 'Qossoth',
-                    goods: 'FUTURE',
-                    techCommon: 'FUTURE',
+                    good: {
+                        name: 'Psychotic Sculpture',
+                        buy: 160,
+                        sell: 250,
+                        sellAtNext: 4
+                    },
+                    techCommon: [ 'yellow', 'laser' ],
                     techRacial: 'FUTURE',
                     systemID: null,
                     fairs: 'FUTURE',
@@ -394,19 +525,19 @@ To the extent possible under law, Drew Folta has waived all copyright and relate
                 }
             },
             ROUTES = {
-                // TODO -- this is the biggy
-                // estimated at 91 routes (14*13/2)
                 // id: route-{a}-{b} ({a} and {b} always lexicographically sorted)
                 /*
                     id
                     systemA
                     systemB
                     distance
-                    enabled         [dynamic]
+                    enabled         [dynamic] perhaps not needed
                     direction       [dynamic]
-                    buy             [dynamic]
-                    sell            [dynamic]
-                    net             [dynamic]
+                    buy             [dynamic] fixed?
+                    sell            [dynamic] fixed?
+                    net             [dynamic] fixed?
+                    telegates       FUTURE
+                    nav points      FUTURE
                 */
             },
             GAME = {
@@ -452,13 +583,13 @@ To the extent possible under law, Drew Folta has waived all copyright and relate
                     evt.stopPropagation();
                     evt.preventDefault();
                 };
-                raceUI.style.opacity = 0.4;
+                raceUI.classList.add('disabled');
             });
 
             // enable available race icons
             races.forEach(function(raceID) {
                 raceUI = raceUIs[raceID];
-                raceUI.style.opacity = 1;
+                raceUI.classList.remove('disabled');
                 raceUI.onclick = function() {
                     popupUI.style.display = 'none';
                     systemRaceSet(systemID, raceID);
@@ -526,16 +657,9 @@ To the extent possible under law, Drew Folta has waived all copyright and relate
     ]]></script>
 
 
-    <rect class="background" x="0" y="0" width="1440" height="800"/>
+    <rect id="background" class="background" x="0" y="0" width="1440" height="800"/>
 
     <g id="map">
-<!-- DEBUGGING
-        <image id="jpeg" xlink:href="mov-large.jpg" x="0" y="0" width="1200" height="800"/>
-        <line class="grid" x1="400" x2="400" y1="0" y2="800" />
-        <line class="grid" x1="800" x2="800" y1="0" y2="800" />
-        <line class="grid" x1="0" x2="1200" y1="400" y2="400" />
--->
-
         <path class="path" d="M 146,35 C 260,14 315,26 369,86" />
         <path class="path" d="m 229,108 c 77,-61 96,-32 81,47" />
         <path class="path" d="m 109,209 c -132,157 -59,227 13,249" />
@@ -611,7 +735,7 @@ To the extent possible under law, Drew Folta has waived all copyright and relate
         </g>
         <g id="sPP" class="system" >
             <ellipse class="boundary" cx="1041" cy="372" rx="102" ry="77" />
-            <use class="thumb" x="1026" y="357" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick'sPP');" />
+            <use class="thumb" x="1026" y="357" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick('sPP');" />
         </g>
         <g id="sRP" class="system" >
             <ellipse class="boundary" cx="142" cy="128" rx="108" ry="85" transform="rotate(45 142,128)" />
@@ -708,42 +832,16 @@ To the extent possible under law, Drew Folta has waived all copyright and relate
         </svg>
     </g>
 
-    <foreignObject x="1200" y="10" width="200" height="400">
-        <div xmlns="http://www.w3.org/1999/xhtml">
-        <b>TODO</b> <br/>
-        * map: routes <br/>
-        * routes calculations <br/>
-        * game config popup <br/>
-        <br/>
-        * nice icons <br/>
-        * map: system names <br/>
-        * map: race names <br/>
-        </div>
-<!--
-        FUTURE
-            * review game pieces for considerations (tech, encounter cards, etc)
-            * mark routes with navigation points (and required pilot numbers)
-            * fairs (game-level popup)
-            * demands (game-level popup)
-            * tech (system-level popup)
-            * black market
-            * telegates? (they affect route distances, if usable)
-            * rotatable UI (for tablets)
-            * rotate fairs (special encounter card)
-            * see if HTML5 pushState() works here
--->
-    </foreignObject>
-
 <!-- DEBUGGING
-    <line id="crossx" x1="600" x2="600" y1="0" y2="800" />
-    <line id="crossy" x1="0" x2="1200" y1="400" y2="400" />
+    <line id="crossx" x1="600" x2="600" y1="0" y2="800" style="stroke:#082;" />
+    <line id="crossy" x1="0" x2="1200" y1="400" y2="400" style="stroke:#082;" />
     <text id="debug" x="1200" y="780">...</text>
     <script type="text/ecmascript"><![CDATA[
-        var jpeg = document.getElementById('jpeg');
+        var bg = document.getElementById('background');
         var crossx = document.getElementById('crossx');
         var crossy = document.getElementById('crossy');
         var debug = document.getElementById('debug');
-        jpeg.addEventListener('mousemove', function(evt) {
+        bg.addEventListener('mousemove', function(evt) {
             debug.textContent = evt.offsetX + ',' + evt.offsetY;
             crossx.x1.baseVal.value = crossx.x2.baseVal.value = evt.offsetX;
             crossy.y1.baseVal.value = crossy.y2.baseVal.value = evt.offsetY;
