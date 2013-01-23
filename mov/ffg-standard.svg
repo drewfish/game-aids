@@ -41,16 +41,37 @@ ROUTES
     each system has a number of "route points" around the thumb
         box or star
 
-    algorithm
-        consider all enabled routes (to center of other side)
-        match to nearset routepoint
-        handle case where multiple routes mat to same routepoint
-            calculate alternatives, and "stretch" of each alternative
-
-    each system can have up to -7- routes
-        5 goods
+    each system can have up to -13- routes
+        5 goods sold
+        5 goods bought
         1 to GH for fairs
-        1 for black market
+        2 for black market
+
+    ALGORITHM A
+        create lists of routes
+            consider races, direction, etc
+        for every system with at least one route
+            for each route
+                calculate angle, snapped to nearest routepoint
+                save as list of routepoints
+            adjust list of routepoints if collisions
+
+    ALGORITHM B
+        create lists of routes
+            consider races, direction, etc
+        for every system with at least one route
+            for each route
+                calculate angle
+            adjust list of angles of all routes in the system
+                calculate average space between route angles
+                if too small, bump to minimum (say 30degrees)
+                calculate average angle
+                    !!warning:  this is tricky with polar math!!
+                evenly distribute routes around average angle
+                    ... using average space between route angles
+                    TODO:  how to make sure that routes are assigned to "nearest" routepoint?
+                        (kinda same issue as ALGORITHM A)
+
 
     DECORATIONS
         buy             source
@@ -81,6 +102,7 @@ ROUTES
                 fill: #002;
                 stroke: none;
             }
+
             #map .grid {
                 stroke: #114;
             }
@@ -99,6 +121,12 @@ ROUTES
                 stroke-width: 3;
                 stroke-dasharray: 6 3;
             }
+
+            #routes circle.DEBUGGING {
+                fill: #F00F00;
+                stroke: none;
+            }
+
             .popup {
                 display: none;
             }
@@ -113,11 +141,11 @@ ROUTES
             .popup .disabled {
                 opacity: 0.4;
             }
-
             .popup text {
                 fill: #00E;
                 text-anchor: middle;
             }
+
             .icon path {
                 fill: #00E;
                 stroke: none;
@@ -127,9 +155,6 @@ ROUTES
                 stroke: none;
             }
 
-            div {
-                color: #CCF;
-            }
             #crossx , #crossy {
                 stroke: #FFF;
                 stroke-width: 1px;
@@ -214,107 +239,125 @@ ROUTES
                     id: 'sAS',
                     name: 'Asteroid System',
                     sector: '11',
+                    uiCenter: [ 735, 685 ],
                     raceID: null
                 },
                 sCW: {
                     id: 'sCW',
                     name: 'Colony World',
                     sector: '00',
+                    uiCenter: [ 181, 353 ],
                     raceID: null
                 },
                 sDW: {
                     id: 'sDW',
                     name: 'Desert World',
                     sector: '10',
+                    uiCenter: [ 484, 90 ],
                     raceID: null
                 },
                 sGH: {
                     id: 'sGH',
                     name: 'Galactic Hub',
-                    sector: '11'
+                    sector: '11',
+                    uiCenter: [ 429, 448 ]
                 },
                 sGP: {
                     id: 'sGP',
                     name: 'Giant Planet',
                     sector: '11',
+                    uiCenter: [ 608, 520 ],
                     raceID: null
                 },
                 sIB: {
                     id: 'sIB',
                     name: 'Intersteller Biosphere',
                     sector: '00',
+                    uiCenter: [ 348, 245 ],
                     raceID: null
                 },
                 sIM: {
                     id: 'sIM',
                     name: 'Inhabited Moon',
                     sector: '20',
+                    uiCenter: [ 1027, 91 ],
                     raceID: null
                 },
                 sIW: {
                     id: 'sIW',
                     name: 'Ice World',
                     sector: '01',
+                    uiCenter: [ 197, 714 ],
                     raceID: null
                 },
                 sJW: {
                     id: 'sJW',
                     name: 'Jungle World',
                     sector: '10',
+                    uiCenter: [ 140, 534 ],
                     raceID: null
                 },
                 sMS: {
                     id: 'sMS',
                     name: 'Multi-Generational Ship',
                     sector: '21',
+                    uiCenter: [ 885, 503 ],
                     raceID: null
                 },
                 sNH: {
                     id: 'sNH',
                     name: 'Nebula Habitat',
                     sector: '10',
+                    uiCenter: [ 567, 341 ],
                     raceID: null
                 },
                 sPP: {
                     id: 'sPP',
                     name: 'Poluted Planet',
                     sector: '10',
+                    uiCenter: [ 1041, 372 ],
                     raceID: null
                 },
                 sRP: {
                     id: 'sRP',
                     name: 'Trapped Rogue Planet',
                     sector: '00',
+                    uiCenter: [ 142, 128 ],
                     raceID: null
                 },
                 sSG: {
                     id: 'sSG',
                     name: 'Supergiant',
                     sector: '01',
+                    uiCenter: [ 363, 593 ],
                     hazard: true
                 },
                 sSN: {
                     id: 'sSN',
                     name: 'Supernova',
                     sector: '10',
+                    uiCenter: [ 740, 73 ],
                     hazard: true
                 },
                 sWS: {
                     id: 'sWS',
                     name: 'War-Torn System',
                     sector: '21',
+                    uiCenter: [ 1038, 693 ],
                     raceID: null
                 },
                 sWW: {
                     id: 'sWW',
                     name: 'Water World',
                     sector: '20',
+                    uiCenter: [ 767, 222 ],
                     raceID: null
                 }
             },
             RACES = {
                 r01: {
                     id: 'r01',
+                    number: 1,
                     name: 'Nillis',
                     good: {
                         name: 'Bionic Perfume',
@@ -330,6 +373,7 @@ ROUTES
                 },
                 r02: {
                     id: 'r02',
+                    number: 2,
                     name: 'Volois',
                     good: {
                         name: 'Canned Traits',
@@ -345,6 +389,7 @@ ROUTES
                 },
                 r03: {
                     id: 'r03',
+                    number: 3,
                     name: 'Graw',
                     good: {
                         name: 'Glorious Junk',
@@ -360,6 +405,7 @@ ROUTES
                 },
                 r04: {
                     id: 'r04',
+                    number: 4,
                     name: 'Niks',
                     good: {
                         name: 'Living Toys',
@@ -375,6 +421,7 @@ ROUTES
                 },
                 r05: {
                     id: 'r05',
+                    number: 5,
                     name: 'Dell',
                     good: {
                         name: 'Finest Dust',
@@ -390,6 +437,7 @@ ROUTES
                 },
                 r06: {
                     id: 'r06',
+                    number: 6,
                     name: 'Humans',
                     good: {
                         name: 'Rock Videos',
@@ -405,6 +453,7 @@ ROUTES
                 },
                 r07: {
                     id: 'r07',
+                    number: 7,
                     name: 'Shenna',
                     good: {
                         name: 'Melf Pelts',
@@ -420,6 +469,7 @@ ROUTES
                 },
                 r08: {
                     id: 'r08',
+                    number: 8,
                     name: 'Yxklyx',
                     good: {
                         name: 'Immortal Grease',
@@ -435,6 +485,7 @@ ROUTES
                 },
                 r09: {
                     id: 'r09',
+                    number: 9,
                     name: 'Zum',
                     good: {
                         name: 'Chicle Liquor',
@@ -450,6 +501,7 @@ ROUTES
                 },
                 r10: {
                     id: 'r10',
+                    number: 10,
                     name: 'Eeepeeep',
                     good: {
                         name: 'Pedigree Bolts',
@@ -465,6 +517,7 @@ ROUTES
                 },
                 r11: {
                     id: 'r11',
+                    number: 11,
                     name: 'Whynoms',
                     good: {
                         name: 'Impossible Furniture',
@@ -480,6 +533,7 @@ ROUTES
                 },
                 r12: {
                     id: 'r12',
+                    number: 12,
                     name: 'Cholos',
                     good: {
                         name: 'Designer Genes',
@@ -495,6 +549,7 @@ ROUTES
                 },
                 r13: {
                     id: 'r13',
+                    number: 13,
                     name: 'Wollow',
                     good: {
                         name: 'Megalith Paperweight',
@@ -510,6 +565,7 @@ ROUTES
                 },
                 r14: {
                     id: 'r14',
+                    number: 14,
                     name: 'Qossoth',
                     good: {
                         name: 'Psychotic Sculpture',
@@ -525,31 +581,1126 @@ ROUTES
                 }
             },
             ROUTES = {
-                // id: route-{a}-{b} ({a} and {b} always lexicographically sorted)
+                // id is "{a}-{b}" where {a} and {b} are always lexicographically sorted
                 /*
                     id
-                    systemA
-                    systemB
-                    distance
-                    enabled         [dynamic] perhaps not needed
-                    direction       [dynamic]
-                    buy             [dynamic] fixed?
-                    sell            [dynamic] fixed?
-                    net             [dynamic] fixed?
-                    telegates       FUTURE
-                    nav points      FUTURE
+                    systemsA
+                    systemsB
+                    distance        measured in systems (not dots)
+                    reversed        [dynamic] boolean
+                    enabled         [dynamic] boolean
+                    buy             [dynamic]
+                    sell            [dynamic]
+                    net             [dynamic]
+                    demands         [dynamic] FUTURE
+                    fairs           [dynamic] FUTURE
+                    telegates       [dynamic] FUTURE
+                    nav points      [dynamic] FUTURE
+                    blackMarket     [dynamic] FUTURE
                 */
+                'sAS-sCW': {
+                    id: 'sAS-sCW',
+                    systemA: 'sAS',
+                    systemB: 'sCW',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sAS-sDW': {
+                    id: 'sAS-sDW',
+                    systemA: 'sAS',
+                    systemB: 'sDW',
+                    distance: 4,
+                    reversed: false,
+                    enabled: false
+                },
+                'sAS-sGH': {
+                    id: 'sAS-sGH',
+                    systemA: 'sAS',
+                    systemB: 'sGH',
+                    distance: 4,
+                    reversed: false,
+                    enabled: false
+                },
+                'sAS-sGP': {
+                    id: 'sAS-sGP',
+                    systemA: 'sAS',
+                    systemB: 'sGP',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sAS-sIB': {
+                    id: 'sAS-sIB',
+                    systemA: 'sAS',
+                    systemB: 'sIB',
+                    distance: 4,
+                    reversed: false,
+                    enabled: false
+                },
+                'sAS-sIM': {
+                    id: 'sAS-sIM',
+                    systemA: 'sAS',
+                    systemB: 'sIM',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sAS-sIW': {
+                    id: 'sAS-sIW',
+                    systemA: 'sAS',
+                    systemB: 'sIW',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sAS-sJW': {
+                    id: 'sAS-sJW',
+                    systemA: 'sAS',
+                    systemB: 'sJW',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sAS-sMS': {
+                    id: 'sAS-sMS',
+                    systemA: 'sAS',
+                    systemB: 'sMS',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sAS-sNH': {
+                    id: 'sAS-sNH',
+                    systemA: 'sAS',
+                    systemB: 'sNH',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sAS-sPP': {
+                    id: 'sAS-sPP',
+                    systemA: 'sAS',
+                    systemB: 'sPP',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sAS-sRP': {
+                    id: 'sAS-sRP',
+                    systemA: 'sAS',
+                    systemB: 'sRP',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sAS-sSG': {
+                    id: 'sAS-sSG',
+                    systemA: 'sAS',
+                    systemB: 'sSG',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sAS-sSN': {
+                    id: 'sAS-sSN',
+                    systemA: 'sAS',
+                    systemB: 'sSN',
+                    distance: 4,
+                    reversed: false,
+                    enabled: false
+                },
+                'sAS-sWS': {
+                    id: 'sAS-sWS',
+                    systemA: 'sAS',
+                    systemB: 'sWS',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sAS-sWW': {
+                    id: 'sAS-sWW',
+                    systemA: 'sAS',
+                    systemB: 'sWW',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sCW-sDW': {
+                    id: 'sCW-sDW',
+                    systemA: 'sCW',
+                    systemB: 'sDW',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sCW-sGH': {
+                    id: 'sCW-sGH',
+                    systemA: 'sCW',
+                    systemB: 'sGH',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sCW-sGP': {
+                    id: 'sCW-sGP',
+                    systemA: 'sCW',
+                    systemB: 'sGP',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sCW-sIB': {
+                    id: 'sCW-sIB',
+                    systemA: 'sCW',
+                    systemB: 'sIB',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sCW-sIM': {
+                    id: 'sCW-sIM',
+                    systemA: 'sCW',
+                    systemB: 'sIM',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sCW-sIW': {
+                    id: 'sCW-sIW',
+                    systemA: 'sCW',
+                    systemB: 'sIW',
+                    distance: 4,
+                    reversed: false,
+                    enabled: false
+                },
+                'sCW-sJW': {
+                    id: 'sCW-sJW',
+                    systemA: 'sCW',
+                    systemB: 'sJW',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sCW-sMS': {
+                    id: 'sCW-sMS',
+                    systemA: 'sCW',
+                    systemB: 'sMS',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sCW-sNH': {
+                    id: 'sCW-sNH',
+                    systemA: 'sCW',
+                    systemB: 'sNH',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sCW-sPP': {
+                    id: 'sCW-sPP',
+                    systemA: 'sCW',
+                    systemB: 'sPP',
+                    distance: 4,
+                    reversed: false,
+                    enabled: false
+                },
+                'sCW-sRP': {
+                    id: 'sCW-sRP',
+                    systemA: 'sCW',
+                    systemB: 'sRP',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sCW-sSG': {
+                    id: 'sCW-sSG',
+                    systemA: 'sCW',
+                    systemB: 'sSG',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sCW-sSN': {
+                    id: 'sCW-sSN',
+                    systemA: 'sCW',
+                    systemB: 'sSN',
+                    distance: 4,
+                    reversed: false,
+                    enabled: false
+                },
+                'sCW-sWS': {
+                    id: 'sCW-sWS',
+                    systemA: 'sCW',
+                    systemB: 'sWS',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sCW-sWW': {
+                    id: 'sCW-sWW',
+                    systemA: 'sCW',
+                    systemB: 'sWW',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sDW-sGH': {
+                    id: 'sDW-sGH',
+                    systemA: 'sDW',
+                    systemB: 'sGH',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sDW-sGP': {
+                    id: 'sDW-sGP',
+                    systemA: 'sDW',
+                    systemB: 'sGP',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sDW-sIB': {
+                    id: 'sDW-sIB',
+                    systemA: 'sDW',
+                    systemB: 'sIB',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sDW-sIM': {
+                    id: 'sDW-sIM',
+                    systemA: 'sDW',
+                    systemB: 'sIM',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sDW-sIW': {
+                    id: 'sDW-sIW',
+                    systemA: 'sDW',
+                    systemB: 'sIW',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sDW-sJW': {
+                    id: 'sDW-sJW',
+                    systemA: 'sDW',
+                    systemB: 'sJW',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sDW-sMS': {
+                    id: 'sDW-sMS',
+                    systemA: 'sDW',
+                    systemB: 'sMS',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sDW-sNH': {
+                    id: 'sDW-sNH',
+                    systemA: 'sDW',
+                    systemB: 'sNH',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sDW-sPP': {
+                    id: 'sDW-sPP',
+                    systemA: 'sDW',
+                    systemB: 'sPP',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sDW-sRP': {
+                    id: 'sDW-sRP',
+                    systemA: 'sDW',
+                    systemB: 'sRP',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sDW-sSG': {
+                    id: 'sDW-sSG',
+                    systemA: 'sDW',
+                    systemB: 'sSG',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sDW-sSN': {
+                    id: 'sDW-sSN',
+                    systemA: 'sDW',
+                    systemB: 'sSN',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sDW-sWS': {
+                    id: 'sDW-sWS',
+                    systemA: 'sDW',
+                    systemB: 'sWS',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sDW-sWW': {
+                    id: 'sDW-sWW',
+                    systemA: 'sDW',
+                    systemB: 'sWW',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sGH-sGP': {
+                    id: 'sGH-sGP',
+                    systemA: 'sGH',
+                    systemB: 'sGP',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sGH-sIB': {
+                    id: 'sGH-sIB',
+                    systemA: 'sGH',
+                    systemB: 'sIB',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sGH-sIM': {
+                    id: 'sGH-sIM',
+                    systemA: 'sGH',
+                    systemB: 'sIM',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sGH-sIW': {
+                    id: 'sGH-sIW',
+                    systemA: 'sGH',
+                    systemB: 'sIW',
+                    distance: 4,
+                    reversed: false,
+                    enabled: false
+                },
+                'sGH-sJW': {
+                    id: 'sGH-sJW',
+                    systemA: 'sGH',
+                    systemB: 'sJW',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sGH-sMS': {
+                    id: 'sGH-sMS',
+                    systemA: 'sGH',
+                    systemB: 'sMS',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sGH-sNH': {
+                    id: 'sGH-sNH',
+                    systemA: 'sGH',
+                    systemB: 'sNH',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sGH-sPP': {
+                    id: 'sGH-sPP',
+                    systemA: 'sGH',
+                    systemB: 'sPP',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sGH-sRP': {
+                    id: 'sGH-sRP',
+                    systemA: 'sGH',
+                    systemB: 'sRP',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sGH-sSG': {
+                    id: 'sGH-sSG',
+                    systemA: 'sGH',
+                    systemB: 'sSG',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sGH-sSN': {
+                    id: 'sGH-sSN',
+                    systemA: 'sGH',
+                    systemB: 'sSN',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sGH-sWS': {
+                    id: 'sGH-sWS',
+                    systemA: 'sGH',
+                    systemB: 'sWS',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sGH-sWW': {
+                    id: 'sGH-sWW',
+                    systemA: 'sGH',
+                    systemB: 'sWW',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sGP-sIB': {
+                    id: 'sGP-sIB',
+                    systemA: 'sGP',
+                    systemB: 'sIB',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sGP-sIM': {
+                    id: 'sGP-sIM',
+                    systemA: 'sGP',
+                    systemB: 'sIM',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sGP-sIW': {
+                    id: 'sGP-sIW',
+                    systemA: 'sGP',
+                    systemB: 'sIW',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sGP-sJW': {
+                    id: 'sGP-sJW',
+                    systemA: 'sGP',
+                    systemB: 'sJW',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sGP-sMS': {
+                    id: 'sGP-sMS',
+                    systemA: 'sGP',
+                    systemB: 'sMS',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sGP-sNH': {
+                    id: 'sGP-sNH',
+                    systemA: 'sGP',
+                    systemB: 'sNH',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sGP-sPP': {
+                    id: 'sGP-sPP',
+                    systemA: 'sGP',
+                    systemB: 'sPP',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sGP-sRP': {
+                    id: 'sGP-sRP',
+                    systemA: 'sGP',
+                    systemB: 'sRP',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sGP-sSG': {
+                    id: 'sGP-sSG',
+                    systemA: 'sGP',
+                    systemB: 'sSG',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sGP-sSN': {
+                    id: 'sGP-sSN',
+                    systemA: 'sGP',
+                    systemB: 'sSN',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sGP-sWS': {
+                    id: 'sGP-sWS',
+                    systemA: 'sGP',
+                    systemB: 'sWS',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sGP-sWW': {
+                    id: 'sGP-sWW',
+                    systemA: 'sGP',
+                    systemB: 'sWW',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIB-sIM': {
+                    id: 'sIB-sIM',
+                    systemA: 'sIB',
+                    systemB: 'sIM',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIB-sIW': {
+                    id: 'sIB-sIW',
+                    systemA: 'sIB',
+                    systemB: 'sIW',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIB-sJW': {
+                    id: 'sIB-sJW',
+                    systemA: 'sIB',
+                    systemB: 'sJW',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIB-sMS': {
+                    id: 'sIB-sMS',
+                    systemA: 'sIB',
+                    systemB: 'sMS',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIB-sNH': {
+                    id: 'sIB-sNH',
+                    systemA: 'sIB',
+                    systemB: 'sNH',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIB-sPP': {
+                    id: 'sIB-sPP',
+                    systemA: 'sIB',
+                    systemB: 'sPP',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIB-sRP': {
+                    id: 'sIB-sRP',
+                    systemA: 'sIB',
+                    systemB: 'sRP',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIB-sSG': {
+                    id: 'sIB-sSG',
+                    systemA: 'sIB',
+                    systemB: 'sSG',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIB-sSN': {
+                    id: 'sIB-sSN',
+                    systemA: 'sIB',
+                    systemB: 'sSN',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIB-sWS': {
+                    id: 'sIB-sWS',
+                    systemA: 'sIB',
+                    systemB: 'sWS',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIB-sWW': {
+                    id: 'sIB-sWW',
+                    systemA: 'sIB',
+                    systemB: 'sWW',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIM-sIW': {
+                    id: 'sIM-sIW',
+                    systemA: 'sIM',
+                    systemB: 'sIW',
+                    distance: 4,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIM-sJW': {
+                    id: 'sIM-sJW',
+                    systemA: 'sIM',
+                    systemB: 'sJW',
+                    distance: 4,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIM-sMS': {
+                    id: 'sIM-sMS',
+                    systemA: 'sIM',
+                    systemB: 'sMS',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIM-sNH': {
+                    id: 'sIM-sNH',
+                    systemA: 'sIM',
+                    systemB: 'sNH',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIM-sPP': {
+                    id: 'sIM-sPP',
+                    systemA: 'sIM',
+                    systemB: 'sPP',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIM-sRP': {
+                    id: 'sIM-sRP',
+                    systemA: 'sIM',
+                    systemB: 'sRP',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIM-sSG': {
+                    id: 'sIM-sSG',
+                    systemA: 'sIM',
+                    systemB: 'sSG',
+                    distance: 4,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIM-sSN': {
+                    id: 'sIM-sSN',
+                    systemA: 'sIM',
+                    systemB: 'sSN',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIM-sWS': {
+                    id: 'sIM-sWS',
+                    systemA: 'sIM',
+                    systemB: 'sWS',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIM-sWW': {
+                    id: 'sIM-sWW',
+                    systemA: 'sIM',
+                    systemB: 'sWW',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIW-sJW': {
+                    id: 'sIW-sJW',
+                    systemA: 'sIW',
+                    systemB: 'sJW',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIW-sMS': {
+                    id: 'sIW-sMS',
+                    systemA: 'sIW',
+                    systemB: 'sMS',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIW-sNH': {
+                    id: 'sIW-sNH',
+                    systemA: 'sIW',
+                    systemB: 'sNH',
+                    distance: 4,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIW-sPP': {
+                    id: 'sIW-sPP',
+                    systemA: 'sIW',
+                    systemB: 'sPP',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIW-sRP': {
+                    id: 'sIW-sRP',
+                    systemA: 'sIW',
+                    systemB: 'sRP',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIW-sSG': {
+                    id: 'sIW-sSG',
+                    systemA: 'sIW',
+                    systemB: 'sSG',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIW-sSN': {
+                    id: 'sIW-sSN',
+                    systemA: 'sIW',
+                    systemB: 'sSN',
+                    distance: 4,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIW-sWS': {
+                    id: 'sIW-sWS',
+                    systemA: 'sIW',
+                    systemB: 'sWS',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sIW-sWW': {
+                    id: 'sIW-sWW',
+                    systemA: 'sIW',
+                    systemB: 'sWW',
+                    distance: 4,
+                    reversed: false,
+                    enabled: false
+                },
+                'sJW-sMS': {
+                    id: 'sJW-sMS',
+                    systemA: 'sJW',
+                    systemB: 'sMS',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sJW-sNH': {
+                    id: 'sJW-sNH',
+                    systemA: 'sJW',
+                    systemB: 'sNH',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sJW-sPP': {
+                    id: 'sJW-sPP',
+                    systemA: 'sJW',
+                    systemB: 'sPP',
+                    distance: 4,
+                    reversed: false,
+                    enabled: false
+                },
+                'sJW-sRP': {
+                    id: 'sJW-sRP',
+                    systemA: 'sJW',
+                    systemB: 'sRP',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sJW-sSG': {
+                    id: 'sJW-sSG',
+                    systemA: 'sJW',
+                    systemB: 'sSG',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sJW-sSN': {
+                    id: 'sJW-sSN',
+                    systemA: 'sJW',
+                    systemB: 'sSN',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sJW-sWS': {
+                    id: 'sJW-sWS',
+                    systemA: 'sJW',
+                    systemB: 'sWS',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sJW-sWW': {
+                    id: 'sJW-sWW',
+                    systemA: 'sJW',
+                    systemB: 'sWW',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sMS-sNH': {
+                    id: 'sMS-sNH',
+                    systemA: 'sMS',
+                    systemB: 'sNH',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sMS-sPP': {
+                    id: 'sMS-sPP',
+                    systemA: 'sMS',
+                    systemB: 'sPP',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sMS-sRP': {
+                    id: 'sMS-sRP',
+                    systemA: 'sMS',
+                    systemB: 'sRP',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sMS-sSG': {
+                    id: 'sMS-sSG',
+                    systemA: 'sMS',
+                    systemB: 'sSG',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sMS-sSN': {
+                    id: 'sMS-sSN',
+                    systemA: 'sMS',
+                    systemB: 'sSN',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sMS-sWS': {
+                    id: 'sMS-sWS',
+                    systemA: 'sMS',
+                    systemB: 'sWS',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sMS-sWW': {
+                    id: 'sMS-sWW',
+                    systemA: 'sMS',
+                    systemB: 'sWW',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sNH-sPP': {
+                    id: 'sNH-sPP',
+                    systemA: 'sNH',
+                    systemB: 'sPP',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sNH-sRP': {
+                    id: 'sNH-sRP',
+                    systemA: 'sNH',
+                    systemB: 'sRP',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sNH-sSG': {
+                    id: 'sNH-sSG',
+                    systemA: 'sNH',
+                    systemB: 'sSG',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sNH-sSN': {
+                    id: 'sNH-sSN',
+                    systemA: 'sNH',
+                    systemB: 'sSN',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sNH-sWS': {
+                    id: 'sNH-sWS',
+                    systemA: 'sNH',
+                    systemB: 'sWS',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sNH-sWW': {
+                    id: 'sNH-sWW',
+                    systemA: 'sNH',
+                    systemB: 'sWW',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sPP-sRP': {
+                    id: 'sPP-sRP',
+                    systemA: 'sPP',
+                    systemB: 'sRP',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sPP-sSG': {
+                    id: 'sPP-sSG',
+                    systemA: 'sPP',
+                    systemB: 'sSG',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sPP-sSN': {
+                    id: 'sPP-sSN',
+                    systemA: 'sPP',
+                    systemB: 'sSN',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sPP-sWS': {
+                    id: 'sPP-sWS',
+                    systemA: 'sPP',
+                    systemB: 'sWS',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sPP-sWW': {
+                    id: 'sPP-sWW',
+                    systemA: 'sPP',
+                    systemB: 'sWW',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sRP-sSG': {
+                    id: 'sRP-sSG',
+                    systemA: 'sRP',
+                    systemB: 'sSG',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sRP-sSN': {
+                    id: 'sRP-sSN',
+                    systemA: 'sRP',
+                    systemB: 'sSN',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sRP-sWS': {
+                    id: 'sRP-sWS',
+                    systemA: 'sRP',
+                    systemB: 'sWS',
+                    distance: 4,
+                    reversed: false,
+                    enabled: false
+                },
+                'sRP-sWW': {
+                    id: 'sRP-sWW',
+                    systemA: 'sRP',
+                    systemB: 'sWW',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sSG-sSN': {
+                    id: 'sSG-sSN',
+                    systemA: 'sSG',
+                    systemB: 'sSN',
+                    distance: 4,
+                    reversed: false,
+                    enabled: false
+                },
+                'sSG-sWS': {
+                    id: 'sSG-sWS',
+                    systemA: 'sSG',
+                    systemB: 'sWS',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                },
+                'sSG-sWW': {
+                    id: 'sSG-sWW',
+                    systemA: 'sSG',
+                    systemB: 'sWW',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sSN-sWS': {
+                    id: 'sSN-sWS',
+                    systemA: 'sSN',
+                    systemB: 'sWS',
+                    distance: 3,
+                    reversed: false,
+                    enabled: false
+                },
+                'sSN-sWW': {
+                    id: 'sSN-sWW',
+                    systemA: 'sSN',
+                    systemB: 'sWW',
+                    distance: 1,
+                    reversed: false,
+                    enabled: false
+                },
+                'sWS-sWW': {
+                    id: 'sWS-sWW',
+                    systemA: 'sWS',
+                    systemB: 'sWW',
+                    distance: 2,
+                    reversed: false,
+                    enabled: false
+                }
             },
             GAME = {
                 showRouteBuy: true,
                 showRouteSell: true,
                 showRouteNet: true,
                 showRouteBlackMarket: false,
-                maxRouteDistance: 12,
+                maxRouteDistance: 2,
                 enableFairs: false,
                 enableDemands: false,
                 showNamesSystems: false,
                 showNamesRaces: false
+            },
+            RACE_BUYERS = {
+                // see gameSetup()
+                // seller: buyer: true
             };
 
 
@@ -565,6 +1716,100 @@ ROUTES
             var newThumb = oldThumb.cloneNode(true);
             newThumb.setAttributeNS(NS.xlink, 'href', '#icon-' + iconID);
             oldThumb.parentElement.replaceChild(newThumb, oldThumb);
+        }
+
+
+        function routesCalculate() {
+            var systemRoutes = {};  // systemID: routeID: route
+
+            // calculate which routes should be shown
+            objectEach(ROUTES, function(routeID, route) {
+                var systemA = SYSTEMS[route.systemA],
+                    systemB = SYSTEMS[route.systemB],
+                    sourceRace;
+
+                // assume doom
+                route.enabled = false;
+                route.reversed = false;
+                route.sourceSystemID = null;
+                route.destSystemID = null;
+                route.sourceRaceID = null;
+                route.destRaceID = null;
+
+                if (systemA.raceID && systemB.raceID) {
+                    if (RACE_BUYERS[systemA.raceID] && RACE_BUYERS[systemA.raceID][systemB.raceID]) {
+                        route.enabled = true;
+                        route.sourceSystemID = systemA.id;
+                        route.destSystemID = systemB.id;
+                        route.sourceRaceID = systemA.raceID;
+                        route.destRaceID = systemB.raceID;
+                    } else if (RACE_BUYERS[systemB.raceID] && RACE_BUYERS[systemB.raceID][systemA.raceID]) {
+                        route.enabled = true;
+                        route.reversed = true;
+                        route.sourceSystemID = systemB.id;
+                        route.destSystemID = systemA.id;
+                        route.sourceRaceID = systemB.raceID;
+                        route.destRaceID = systemA.raceID;
+                    }
+                    if (route.distance > GAME.maxRouteDistance) {
+                        route.enabled = false;
+                    }
+                    if (route.enabled) {
+                        sourceRace = RACES[route.sourceRaceID];
+                        route.buy = sourceRace.good.buy;
+                        route.sell = sourceRace.good.sell;
+                        route.net = sourceRace.good.sell - sourceRace.good.buy;
+                        systemRoutes[route.sourceSystemID] = systemRoutes[route.sourceSystemID] || {};
+                        systemRoutes[route.sourceSystemID][route.id] = route;
+                        systemRoutes[route.destSystemID] = systemRoutes[route.destSystemID] || {};
+                        systemRoutes[route.destSystemID][route.id] = route;
+                    }
+                }
+            });
+
+            // calculate route points
+            // TODO
+            /*
+            objectEach(systemRoutes, function(systemID, routes) {
+                var system = SYSTEMS[systemID];
+                var routepoints = {};
+                objectEach(routes, function(routeID, route) {
+                });
+            });
+            */
+
+            // update the UI
+            // TODO:  draw real UI
+            var routesUI = document.getElementById('routes');
+            objectEach(ROUTES, function(routeID, route) {
+                var routeUI = document.getElementById(routeID);
+                var sourceSystem = SYSTEMS[route.sourceSystemID];
+                var destSystem = SYSTEMS[route.destSystemID];
+
+                // create
+                if (route.enabled && !routeUI) {
+                    routeUI = document.createElementNS(NS.svg, 'line');
+                    routeUI.setAttribute('id', route.id);
+                    routeUI.setAttribute('x1', sourceSystem.uiCenter[0]);
+                    routeUI.setAttribute('y1', sourceSystem.uiCenter[1]);
+                    routeUI.setAttribute('x2', destSystem.uiCenter[0]);
+                    routeUI.setAttribute('y2', destSystem.uiCenter[1]);
+                    routeUI.setAttribute('style', 'stroke:#082;stroke-width:3;stroke-opacity:0.4;fill:none;');
+                    routesUI.appendChild(routeUI);
+                    return;
+                }
+
+                // update
+                if (route.enabled && routeUI) {
+                    return;
+                }
+
+                // delete
+                if (routeUI && !route.enabled) {
+                    routesUI.removeChild(routeUI);
+                    return;
+                }
+            });
         }
 
 
@@ -631,7 +1876,7 @@ ROUTES
             thumbUI = systemUI.getElementsByClassName('thumb')[0];
             thumbIconSet(thumbUI, raceID || 'rUN');
 
-            // TODO:  recalculate routes
+            routesCalculate();
         }
 
 
@@ -654,6 +1899,52 @@ ROUTES
             systemPopupOpen(systemID, races);
         }
 
+
+        function gameSetup() {
+            RACE_BUYERS = {};
+            objectEach(RACES, function(sellerID, seller) {
+                var r, rr;
+                RACE_BUYERS[sellerID] = {};
+                // FUTURE:  consider black market
+                for (r = 1; r <= seller.good.sellAtNext; r += 1) {
+                    rr = seller.number + r;
+                    rr = rr % 14;
+                    if (rr === 0) {
+                        rr = 14;
+                    }
+                    rr = (rr < 10) ? 'r0' + rr : 'r' + rr;
+                    RACE_BUYERS[sellerID][rr] = true;
+                }
+            });
+        }
+
+
+        window.onload = function() {
+            gameSetup();
+
+            /* DEBUGGING route points
+            var routesUI = document.getElementById('routes');
+            var POINTS_COUNT = 12;
+            var POINTS_DISTANCE = 50;
+            objectEach(SYSTEMS, function(systemID, system) {
+                if (system.hazard) {
+                    return;
+                }
+                for (var i = 0; i < POINTS_COUNT; i += 1) {
+                    var radians = (360 / POINTS_COUNT) * i * Math.PI / 180;
+                    var dummyXY = system.uiCenter.slice();
+                    dummyXY[0] += POINTS_DISTANCE * Math.cos(radians);
+                    dummyXY[1] += POINTS_DISTANCE * Math.sin(radians);
+                    var circleUI = document.createElementNS(NS.svg, 'circle');
+                    circleUI.setAttribute('class', 'DEBUGGING');
+                    circleUI.setAttribute('cx', dummyXY[0]);
+                    circleUI.setAttribute('cy', dummyXY[1]);
+                    circleUI.setAttribute('r', 3);
+                    routesUI.appendChild(circleUI);
+                }
+            });
+            */
+        };
     ]]></script>
 
 
@@ -696,7 +1987,7 @@ ROUTES
         </g>
         <g id="sCW" class="system" >
             <ellipse class="boundary" cx="181" cy="353" rx="103" ry="78" />
-            <use class="thumb" x="165" y="338" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick('sCW');" />
+            <use class="thumb" x="166" y="338" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick('sCW');" />
         </g>
         <g id="sDW" class="system" >
             <ellipse class="boundary" cx="484" cy="90" rx="115" ry="75" />
@@ -758,7 +2049,6 @@ ROUTES
     </g>
 
     <g id="routes">
-        <!-- TODO -->
     </g>
 
     <g id="popupSystem" class="popup">
