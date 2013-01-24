@@ -605,13 +605,7 @@ ROUTES
                     systemsA
                     systemsB
                     distance        measured in systems (not dots)
-                    reversed        [dynamic] boolean
-                    enabled         [dynamic] boolean
-                    buy             [dynamic]
-                    sell            [dynamic]
-                    net             [dynamic]
-                    demands         [dynamic] FUTURE
-                    fairs           [dynamic] FUTURE
+                    enabled         [dynamic] null|object
                     telegates       [dynamic] FUTURE
                     nav points      [dynamic] FUTURE
                     blackMarket     [dynamic] FUTURE
@@ -621,1088 +615,952 @@ ROUTES
                     systemA: 'sAS',
                     systemB: 'sCW',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sAS-sDW': {
                     id: 'sAS-sDW',
                     systemA: 'sAS',
                     systemB: 'sDW',
                     distance: 4,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sAS-sGH': {
                     id: 'sAS-sGH',
                     systemA: 'sAS',
                     systemB: 'sGH',
                     distance: 4,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sAS-sGP': {
                     id: 'sAS-sGP',
                     systemA: 'sAS',
                     systemB: 'sGP',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sAS-sIB': {
                     id: 'sAS-sIB',
                     systemA: 'sAS',
                     systemB: 'sIB',
                     distance: 4,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sAS-sIM': {
                     id: 'sAS-sIM',
                     systemA: 'sAS',
                     systemB: 'sIM',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sAS-sIW': {
                     id: 'sAS-sIW',
                     systemA: 'sAS',
                     systemB: 'sIW',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sAS-sJW': {
                     id: 'sAS-sJW',
                     systemA: 'sAS',
                     systemB: 'sJW',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sAS-sMS': {
                     id: 'sAS-sMS',
                     systemA: 'sAS',
                     systemB: 'sMS',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sAS-sNH': {
                     id: 'sAS-sNH',
                     systemA: 'sAS',
                     systemB: 'sNH',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sAS-sPP': {
                     id: 'sAS-sPP',
                     systemA: 'sAS',
                     systemB: 'sPP',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sAS-sRP': {
                     id: 'sAS-sRP',
                     systemA: 'sAS',
                     systemB: 'sRP',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sAS-sSG': {
                     id: 'sAS-sSG',
                     systemA: 'sAS',
                     systemB: 'sSG',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sAS-sSN': {
                     id: 'sAS-sSN',
                     systemA: 'sAS',
                     systemB: 'sSN',
                     distance: 4,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sAS-sWS': {
                     id: 'sAS-sWS',
                     systemA: 'sAS',
                     systemB: 'sWS',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sAS-sWW': {
                     id: 'sAS-sWW',
                     systemA: 'sAS',
                     systemB: 'sWW',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sCW-sDW': {
                     id: 'sCW-sDW',
                     systemA: 'sCW',
                     systemB: 'sDW',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sCW-sGH': {
                     id: 'sCW-sGH',
                     systemA: 'sCW',
                     systemB: 'sGH',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sCW-sGP': {
                     id: 'sCW-sGP',
                     systemA: 'sCW',
                     systemB: 'sGP',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sCW-sIB': {
                     id: 'sCW-sIB',
                     systemA: 'sCW',
                     systemB: 'sIB',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sCW-sIM': {
                     id: 'sCW-sIM',
                     systemA: 'sCW',
                     systemB: 'sIM',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sCW-sIW': {
                     id: 'sCW-sIW',
                     systemA: 'sCW',
                     systemB: 'sIW',
                     distance: 4,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sCW-sJW': {
                     id: 'sCW-sJW',
                     systemA: 'sCW',
                     systemB: 'sJW',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sCW-sMS': {
                     id: 'sCW-sMS',
                     systemA: 'sCW',
                     systemB: 'sMS',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sCW-sNH': {
                     id: 'sCW-sNH',
                     systemA: 'sCW',
                     systemB: 'sNH',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sCW-sPP': {
                     id: 'sCW-sPP',
                     systemA: 'sCW',
                     systemB: 'sPP',
                     distance: 4,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sCW-sRP': {
                     id: 'sCW-sRP',
                     systemA: 'sCW',
                     systemB: 'sRP',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sCW-sSG': {
                     id: 'sCW-sSG',
                     systemA: 'sCW',
                     systemB: 'sSG',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sCW-sSN': {
                     id: 'sCW-sSN',
                     systemA: 'sCW',
                     systemB: 'sSN',
                     distance: 4,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sCW-sWS': {
                     id: 'sCW-sWS',
                     systemA: 'sCW',
                     systemB: 'sWS',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sCW-sWW': {
                     id: 'sCW-sWW',
                     systemA: 'sCW',
                     systemB: 'sWW',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sDW-sGH': {
                     id: 'sDW-sGH',
                     systemA: 'sDW',
                     systemB: 'sGH',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sDW-sGP': {
                     id: 'sDW-sGP',
                     systemA: 'sDW',
                     systemB: 'sGP',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sDW-sIB': {
                     id: 'sDW-sIB',
                     systemA: 'sDW',
                     systemB: 'sIB',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sDW-sIM': {
                     id: 'sDW-sIM',
                     systemA: 'sDW',
                     systemB: 'sIM',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sDW-sIW': {
                     id: 'sDW-sIW',
                     systemA: 'sDW',
                     systemB: 'sIW',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sDW-sJW': {
                     id: 'sDW-sJW',
                     systemA: 'sDW',
                     systemB: 'sJW',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sDW-sMS': {
                     id: 'sDW-sMS',
                     systemA: 'sDW',
                     systemB: 'sMS',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sDW-sNH': {
                     id: 'sDW-sNH',
                     systemA: 'sDW',
                     systemB: 'sNH',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sDW-sPP': {
                     id: 'sDW-sPP',
                     systemA: 'sDW',
                     systemB: 'sPP',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sDW-sRP': {
                     id: 'sDW-sRP',
                     systemA: 'sDW',
                     systemB: 'sRP',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sDW-sSG': {
                     id: 'sDW-sSG',
                     systemA: 'sDW',
                     systemB: 'sSG',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sDW-sSN': {
                     id: 'sDW-sSN',
                     systemA: 'sDW',
                     systemB: 'sSN',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sDW-sWS': {
                     id: 'sDW-sWS',
                     systemA: 'sDW',
                     systemB: 'sWS',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sDW-sWW': {
                     id: 'sDW-sWW',
                     systemA: 'sDW',
                     systemB: 'sWW',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sGH-sGP': {
                     id: 'sGH-sGP',
                     systemA: 'sGH',
                     systemB: 'sGP',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sGH-sIB': {
                     id: 'sGH-sIB',
                     systemA: 'sGH',
                     systemB: 'sIB',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sGH-sIM': {
                     id: 'sGH-sIM',
                     systemA: 'sGH',
                     systemB: 'sIM',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sGH-sIW': {
                     id: 'sGH-sIW',
                     systemA: 'sGH',
                     systemB: 'sIW',
                     distance: 4,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sGH-sJW': {
                     id: 'sGH-sJW',
                     systemA: 'sGH',
                     systemB: 'sJW',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sGH-sMS': {
                     id: 'sGH-sMS',
                     systemA: 'sGH',
                     systemB: 'sMS',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sGH-sNH': {
                     id: 'sGH-sNH',
                     systemA: 'sGH',
                     systemB: 'sNH',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sGH-sPP': {
                     id: 'sGH-sPP',
                     systemA: 'sGH',
                     systemB: 'sPP',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sGH-sRP': {
                     id: 'sGH-sRP',
                     systemA: 'sGH',
                     systemB: 'sRP',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sGH-sSG': {
                     id: 'sGH-sSG',
                     systemA: 'sGH',
                     systemB: 'sSG',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sGH-sSN': {
                     id: 'sGH-sSN',
                     systemA: 'sGH',
                     systemB: 'sSN',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sGH-sWS': {
                     id: 'sGH-sWS',
                     systemA: 'sGH',
                     systemB: 'sWS',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sGH-sWW': {
                     id: 'sGH-sWW',
                     systemA: 'sGH',
                     systemB: 'sWW',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sGP-sIB': {
                     id: 'sGP-sIB',
                     systemA: 'sGP',
                     systemB: 'sIB',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sGP-sIM': {
                     id: 'sGP-sIM',
                     systemA: 'sGP',
                     systemB: 'sIM',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sGP-sIW': {
                     id: 'sGP-sIW',
                     systemA: 'sGP',
                     systemB: 'sIW',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sGP-sJW': {
                     id: 'sGP-sJW',
                     systemA: 'sGP',
                     systemB: 'sJW',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sGP-sMS': {
                     id: 'sGP-sMS',
                     systemA: 'sGP',
                     systemB: 'sMS',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sGP-sNH': {
                     id: 'sGP-sNH',
                     systemA: 'sGP',
                     systemB: 'sNH',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sGP-sPP': {
                     id: 'sGP-sPP',
                     systemA: 'sGP',
                     systemB: 'sPP',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sGP-sRP': {
                     id: 'sGP-sRP',
                     systemA: 'sGP',
                     systemB: 'sRP',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sGP-sSG': {
                     id: 'sGP-sSG',
                     systemA: 'sGP',
                     systemB: 'sSG',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sGP-sSN': {
                     id: 'sGP-sSN',
                     systemA: 'sGP',
                     systemB: 'sSN',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sGP-sWS': {
                     id: 'sGP-sWS',
                     systemA: 'sGP',
                     systemB: 'sWS',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sGP-sWW': {
                     id: 'sGP-sWW',
                     systemA: 'sGP',
                     systemB: 'sWW',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIB-sIM': {
                     id: 'sIB-sIM',
                     systemA: 'sIB',
                     systemB: 'sIM',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIB-sIW': {
                     id: 'sIB-sIW',
                     systemA: 'sIB',
                     systemB: 'sIW',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIB-sJW': {
                     id: 'sIB-sJW',
                     systemA: 'sIB',
                     systemB: 'sJW',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIB-sMS': {
                     id: 'sIB-sMS',
                     systemA: 'sIB',
                     systemB: 'sMS',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIB-sNH': {
                     id: 'sIB-sNH',
                     systemA: 'sIB',
                     systemB: 'sNH',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIB-sPP': {
                     id: 'sIB-sPP',
                     systemA: 'sIB',
                     systemB: 'sPP',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIB-sRP': {
                     id: 'sIB-sRP',
                     systemA: 'sIB',
                     systemB: 'sRP',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIB-sSG': {
                     id: 'sIB-sSG',
                     systemA: 'sIB',
                     systemB: 'sSG',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIB-sSN': {
                     id: 'sIB-sSN',
                     systemA: 'sIB',
                     systemB: 'sSN',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIB-sWS': {
                     id: 'sIB-sWS',
                     systemA: 'sIB',
                     systemB: 'sWS',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIB-sWW': {
                     id: 'sIB-sWW',
                     systemA: 'sIB',
                     systemB: 'sWW',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIM-sIW': {
                     id: 'sIM-sIW',
                     systemA: 'sIM',
                     systemB: 'sIW',
                     distance: 4,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIM-sJW': {
                     id: 'sIM-sJW',
                     systemA: 'sIM',
                     systemB: 'sJW',
                     distance: 4,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIM-sMS': {
                     id: 'sIM-sMS',
                     systemA: 'sIM',
                     systemB: 'sMS',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIM-sNH': {
                     id: 'sIM-sNH',
                     systemA: 'sIM',
                     systemB: 'sNH',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIM-sPP': {
                     id: 'sIM-sPP',
                     systemA: 'sIM',
                     systemB: 'sPP',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIM-sRP': {
                     id: 'sIM-sRP',
                     systemA: 'sIM',
                     systemB: 'sRP',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIM-sSG': {
                     id: 'sIM-sSG',
                     systemA: 'sIM',
                     systemB: 'sSG',
                     distance: 4,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIM-sSN': {
                     id: 'sIM-sSN',
                     systemA: 'sIM',
                     systemB: 'sSN',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIM-sWS': {
                     id: 'sIM-sWS',
                     systemA: 'sIM',
                     systemB: 'sWS',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIM-sWW': {
                     id: 'sIM-sWW',
                     systemA: 'sIM',
                     systemB: 'sWW',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIW-sJW': {
                     id: 'sIW-sJW',
                     systemA: 'sIW',
                     systemB: 'sJW',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIW-sMS': {
                     id: 'sIW-sMS',
                     systemA: 'sIW',
                     systemB: 'sMS',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIW-sNH': {
                     id: 'sIW-sNH',
                     systemA: 'sIW',
                     systemB: 'sNH',
                     distance: 4,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIW-sPP': {
                     id: 'sIW-sPP',
                     systemA: 'sIW',
                     systemB: 'sPP',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIW-sRP': {
                     id: 'sIW-sRP',
                     systemA: 'sIW',
                     systemB: 'sRP',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIW-sSG': {
                     id: 'sIW-sSG',
                     systemA: 'sIW',
                     systemB: 'sSG',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIW-sSN': {
                     id: 'sIW-sSN',
                     systemA: 'sIW',
                     systemB: 'sSN',
                     distance: 4,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIW-sWS': {
                     id: 'sIW-sWS',
                     systemA: 'sIW',
                     systemB: 'sWS',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sIW-sWW': {
                     id: 'sIW-sWW',
                     systemA: 'sIW',
                     systemB: 'sWW',
                     distance: 4,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sJW-sMS': {
                     id: 'sJW-sMS',
                     systemA: 'sJW',
                     systemB: 'sMS',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sJW-sNH': {
                     id: 'sJW-sNH',
                     systemA: 'sJW',
                     systemB: 'sNH',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sJW-sPP': {
                     id: 'sJW-sPP',
                     systemA: 'sJW',
                     systemB: 'sPP',
                     distance: 4,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sJW-sRP': {
                     id: 'sJW-sRP',
                     systemA: 'sJW',
                     systemB: 'sRP',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sJW-sSG': {
                     id: 'sJW-sSG',
                     systemA: 'sJW',
                     systemB: 'sSG',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sJW-sSN': {
                     id: 'sJW-sSN',
                     systemA: 'sJW',
                     systemB: 'sSN',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sJW-sWS': {
                     id: 'sJW-sWS',
                     systemA: 'sJW',
                     systemB: 'sWS',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sJW-sWW': {
                     id: 'sJW-sWW',
                     systemA: 'sJW',
                     systemB: 'sWW',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sMS-sNH': {
                     id: 'sMS-sNH',
                     systemA: 'sMS',
                     systemB: 'sNH',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sMS-sPP': {
                     id: 'sMS-sPP',
                     systemA: 'sMS',
                     systemB: 'sPP',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sMS-sRP': {
                     id: 'sMS-sRP',
                     systemA: 'sMS',
                     systemB: 'sRP',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sMS-sSG': {
                     id: 'sMS-sSG',
                     systemA: 'sMS',
                     systemB: 'sSG',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sMS-sSN': {
                     id: 'sMS-sSN',
                     systemA: 'sMS',
                     systemB: 'sSN',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sMS-sWS': {
                     id: 'sMS-sWS',
                     systemA: 'sMS',
                     systemB: 'sWS',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sMS-sWW': {
                     id: 'sMS-sWW',
                     systemA: 'sMS',
                     systemB: 'sWW',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sNH-sPP': {
                     id: 'sNH-sPP',
                     systemA: 'sNH',
                     systemB: 'sPP',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sNH-sRP': {
                     id: 'sNH-sRP',
                     systemA: 'sNH',
                     systemB: 'sRP',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sNH-sSG': {
                     id: 'sNH-sSG',
                     systemA: 'sNH',
                     systemB: 'sSG',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sNH-sSN': {
                     id: 'sNH-sSN',
                     systemA: 'sNH',
                     systemB: 'sSN',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sNH-sWS': {
                     id: 'sNH-sWS',
                     systemA: 'sNH',
                     systemB: 'sWS',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sNH-sWW': {
                     id: 'sNH-sWW',
                     systemA: 'sNH',
                     systemB: 'sWW',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sPP-sRP': {
                     id: 'sPP-sRP',
                     systemA: 'sPP',
                     systemB: 'sRP',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sPP-sSG': {
                     id: 'sPP-sSG',
                     systemA: 'sPP',
                     systemB: 'sSG',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sPP-sSN': {
                     id: 'sPP-sSN',
                     systemA: 'sPP',
                     systemB: 'sSN',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sPP-sWS': {
                     id: 'sPP-sWS',
                     systemA: 'sPP',
                     systemB: 'sWS',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sPP-sWW': {
                     id: 'sPP-sWW',
                     systemA: 'sPP',
                     systemB: 'sWW',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sRP-sSG': {
                     id: 'sRP-sSG',
                     systemA: 'sRP',
                     systemB: 'sSG',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sRP-sSN': {
                     id: 'sRP-sSN',
                     systemA: 'sRP',
                     systemB: 'sSN',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sRP-sWS': {
                     id: 'sRP-sWS',
                     systemA: 'sRP',
                     systemB: 'sWS',
                     distance: 4,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sRP-sWW': {
                     id: 'sRP-sWW',
                     systemA: 'sRP',
                     systemB: 'sWW',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sSG-sSN': {
                     id: 'sSG-sSN',
                     systemA: 'sSG',
                     systemB: 'sSN',
                     distance: 4,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sSG-sWS': {
                     id: 'sSG-sWS',
                     systemA: 'sSG',
                     systemB: 'sWS',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sSG-sWW': {
                     id: 'sSG-sWW',
                     systemA: 'sSG',
                     systemB: 'sWW',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sSN-sWS': {
                     id: 'sSN-sWS',
                     systemA: 'sSN',
                     systemB: 'sWS',
                     distance: 3,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sSN-sWW': {
                     id: 'sSN-sWW',
                     systemA: 'sSN',
                     systemB: 'sWW',
                     distance: 1,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 },
                 'sWS-sWW': {
                     id: 'sWS-sWW',
                     systemA: 'sWS',
                     systemB: 'sWW',
                     distance: 2,
-                    reversed: false,
-                    enabled: false
+                    enabled: null
                 }
             },
             GAME = {
@@ -1743,44 +1601,35 @@ ROUTES
             // calculate which routes should be shown
             objectEach(ROUTES, function(routeID, route) {
                 var systemA = SYSTEMS[route.systemA],
-                    systemB = SYSTEMS[route.systemB],
-                    sourceRace;
+                    systemB = SYSTEMS[route.systemB];
 
                 // assume doom
-                route.enabled = false;
-                route.reversed = false;
-                route.sourceSystemID = null;
-                route.destSystemID = null;
-                route.sourceRaceID = null;
-                route.destRaceID = null;
+                route.enabled = null;
 
                 if (systemA.raceID && systemB.raceID) {
                     if (RACE_BUYERS[systemA.raceID] && RACE_BUYERS[systemA.raceID][systemB.raceID]) {
-                        route.enabled = true;
-                        route.sourceSystemID = systemA.id;
-                        route.destSystemID = systemB.id;
-                        route.sourceRaceID = systemA.raceID;
-                        route.destRaceID = systemB.raceID;
+                        route.enabled = {
+                            sourceSystemID: systemA.id,
+                            destSystemID: systemB.id,
+                            sourceRaceID: systemA.raceID,
+                            destRaceID: systemB.raceID
+                        };
                     } else if (RACE_BUYERS[systemB.raceID] && RACE_BUYERS[systemB.raceID][systemA.raceID]) {
-                        route.enabled = true;
-                        route.reversed = true;
-                        route.sourceSystemID = systemB.id;
-                        route.destSystemID = systemA.id;
-                        route.sourceRaceID = systemB.raceID;
-                        route.destRaceID = systemA.raceID;
+                        route.enabled = {
+                            sourceSystemID: systemB.id,
+                            destSystemID: systemA.id,
+                            sourceRaceID: systemB.raceID,
+                            destRaceID: systemA.raceID
+                        };
                     }
                     if (route.distance > GAME.maxRouteDistance) {
-                        route.enabled = false;
+                        route.enabled = null;
                     }
                     if (route.enabled) {
-                        sourceRace = RACES[route.sourceRaceID];
-                        route.buy = sourceRace.good.buy;
-                        route.sell = sourceRace.good.sell;
-                        route.net = sourceRace.good.sell - sourceRace.good.buy;
-                        systemRoutes[route.sourceSystemID] = systemRoutes[route.sourceSystemID] || {};
-                        systemRoutes[route.sourceSystemID][route.id] = route;
-                        systemRoutes[route.destSystemID] = systemRoutes[route.destSystemID] || {};
-                        systemRoutes[route.destSystemID][route.id] = route;
+                        systemRoutes[route.enabled.sourceSystemID] = systemRoutes[route.enabled.sourceSystemID] || {};
+                        systemRoutes[route.enabled.sourceSystemID][route.id] = route;
+                        systemRoutes[route.enabled.destSystemID] = systemRoutes[route.enabled.destSystemID] || {};
+                        systemRoutes[route.enabled.destSystemID][route.id] = route;
                     }
                 }
             });
@@ -1800,12 +1649,14 @@ ROUTES
             // TODO:  draw real UI
             var routesUI = document.getElementById('routes');
             objectEach(ROUTES, function(routeID, route) {
-                var routeUI = document.getElementById(routeID);
-                var sourceSystem = SYSTEMS[route.sourceSystemID];
-                var destSystem = SYSTEMS[route.destSystemID];
+                var routeUI = document.getElementById(routeID),
+                    sourceSystem,
+                    destSystem;
 
                 // create
                 if (route.enabled && !routeUI) {
+                    sourceSystem = SYSTEMS[route.enabled.sourceSystemID];
+                    destSystem = SYSTEMS[route.enabled.destSystemID];
                     routeUI = document.createElementNS(NS.svg, 'path');
                     routeUI.setAttribute('id', route.id);
                     routeUI.setAttribute('class', 'route');
