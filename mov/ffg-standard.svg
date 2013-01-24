@@ -1618,6 +1618,13 @@ ROUTES
         }
 
 
+        // detect and handle collisions at routepoints
+        // routepoints is routepoint: routeID: isSource
+        function routepointsDistribute(systemID, routepoints) {
+            // TODO
+        }
+
+
         // returns degrees
         function routeAngle(source, dest) {
             var y = dest[1] - source[1],
@@ -1648,16 +1655,18 @@ ROUTES
                             destSystemID: systemB.id,
                             sourceRaceID: systemA.raceID,
                             destRaceID: systemB.raceID,
-                            angle: routeAngle(systemA.uiCenter, systemB.uiCenter)
+                            sourceAngle: routeAngle(systemA.uiCenter, systemB.uiCenter)
                         };
+                        route.enabled.destAngle = angleInvert(route.enabled.sourceAngle);
                     } else if (RACE_BUYERS[systemB.raceID] && RACE_BUYERS[systemB.raceID][systemA.raceID]) {
                         route.enabled = {
                             sourceSystemID: systemB.id,
                             destSystemID: systemA.id,
                             sourceRaceID: systemB.raceID,
                             destRaceID: systemA.raceID,
-                            angle: routeAngle(systemB.uiCenter, systemA.uiCenter)
+                            sourceAngle: routeAngle(systemB.uiCenter, systemA.uiCenter)
                         };
+                        route.enabled.destAngle = angleInvert(route.enabled.sourceAngle);
                     }
                     if (route.distance > GAME.maxRouteDistance) {
                         route.enabled = null;
@@ -1673,19 +1682,23 @@ ROUTES
 
             // calculate route points
             objectEach(systemRoutes, function(systemID, routes) {
-                var system = SYSTEMS[systemID];
+                var system = SYSTEMS[systemID],
+                    routepoints = {};   // see routepointsDistribute()
                 objectEach(routes, function(routeID, route) {
-                    var angle = route.enabled.angle;
-                    var routepoint = angleRoutepoint(angle);
+                    var routepoint;
                     if (systemID === route.enabled.sourceSystemID) {
+                        routepoint = angleRoutepoint(route.enabled.sourceAngle);
                         route.enabled.sourceRoutepoint = routepoint;
+                        routepoints[routepoint] = routepoints[routepoint] || {};
+                        routepoints[routepoint][route.id] = true;
                     } else {
-                        angle = angleInvert(angle);
-                        routepoint = angleRoutepoint(angle);
+                        routepoint = angleRoutepoint(route.enabled.destAngle);
                         route.enabled.destRoutepoint = routepoint;
+                        routepoints[routepoint] = routepoints[routepoint] || {};
+                        routepoints[routepoint][route.id] = false;
                     }
                 });
-                // TODO -- detect and handle collisions at routepoints
+                routepointsDistribute(systemID, routepoints);
             });
 
             // update the UI
