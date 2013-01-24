@@ -1577,7 +1577,10 @@ ROUTES
             RACE_BUYERS = {
                 // see gameSetup()
                 // seller: buyer: true
-            };
+            },
+            ROUTEPOINT_COUNT = 12,
+            ROUTEPOINT_DISTANCE = 50,
+            ROUTEPOINT_ANGLE;
 
 
         function objectEach(obj, cb) {
@@ -1587,11 +1590,43 @@ ROUTES
         }
 
 
+        function angleInvert(angle) {
+            return (angle + 180) % 360;
+        }
+
+
+        function angleRoutepoint(angle) {
+            return Math.round(angle / ROUTEPOINT_ANGLE);
+        }
+
+
+        // returns [x,y]
+        function systemRoutepointGet(system, rp) {
+            var radians = ROUTEPOINT_ANGLE * rp * Math.PI / 180;
+            var rpXY = system.uiCenter.slice();
+            rpXY[0] += ROUTEPOINT_DISTANCE * Math.cos(radians);
+            rpXY[1] += ROUTEPOINT_DISTANCE * Math.sin(radians);
+            return rpXY;
+        }
+
+
         function thumbIconSet(oldThumb, iconID) {
             // This is the only way I've found that works on Chrome.
             var newThumb = oldThumb.cloneNode(true);
             newThumb.setAttributeNS(NS.xlink, 'href', '#icon-' + iconID);
             oldThumb.parentElement.replaceChild(newThumb, oldThumb);
+        }
+
+
+        // returns degrees
+        function routeAngle(source, dest) {
+            var y = dest[1] - source[1],
+                x = dest[0] - source[0],
+                angle = Math.atan2(y, x) * 180 / Math.PI;
+            if (angle < 0) {
+                angle += 360;
+            }
+            return angle;
         }
 
 
@@ -1612,14 +1647,16 @@ ROUTES
                             sourceSystemID: systemA.id,
                             destSystemID: systemB.id,
                             sourceRaceID: systemA.raceID,
-                            destRaceID: systemB.raceID
+                            destRaceID: systemB.raceID,
+                            angle: routeAngle(systemA.uiCenter, systemB.uiCenter)
                         };
                     } else if (RACE_BUYERS[systemB.raceID] && RACE_BUYERS[systemB.raceID][systemA.raceID]) {
                         route.enabled = {
                             sourceSystemID: systemB.id,
                             destSystemID: systemA.id,
                             sourceRaceID: systemB.raceID,
-                            destRaceID: systemA.raceID
+                            destRaceID: systemA.raceID,
+                            angle: routeAngle(systemB.uiCenter, systemA.uiCenter)
                         };
                     }
                     if (route.distance > GAME.maxRouteDistance) {
@@ -1635,15 +1672,21 @@ ROUTES
             });
 
             // calculate route points
-            // TODO
-            /*
             objectEach(systemRoutes, function(systemID, routes) {
                 var system = SYSTEMS[systemID];
-                var routepoints = {};
                 objectEach(routes, function(routeID, route) {
+                    var angle = route.enabled.angle;
+                    var routepoint = angleRoutepoint(angle);
+                    if (systemID === route.enabled.sourceSystemID) {
+                        route.enabled.sourceRoutepoint = routepoint;
+                    } else {
+                        angle = angleInvert(angle);
+                        routepoint = angleRoutepoint(angle);
+                        route.enabled.destRoutepoint = routepoint;
+                    }
                 });
+                // TODO -- detect and handle collisions at routepoints
             });
-            */
 
             // update the UI
             // TODO:  draw real UI
@@ -1651,20 +1694,24 @@ ROUTES
             objectEach(ROUTES, function(routeID, route) {
                 var routeUI = document.getElementById(routeID),
                     sourceSystem,
-                    destSystem;
+                    destSystem,
+                    sourceRPXY,
+                    destRPXY;
 
                 // create
                 if (route.enabled && !routeUI) {
                     sourceSystem = SYSTEMS[route.enabled.sourceSystemID];
                     destSystem = SYSTEMS[route.enabled.destSystemID];
+                    sourceRPXY = systemRoutepointGet(sourceSystem, route.enabled.sourceRoutepoint);
+                    destRPXY = systemRoutepointGet(destSystem, route.enabled.destRoutepoint);
                     routeUI = document.createElementNS(NS.svg, 'path');
                     routeUI.setAttribute('id', route.id);
                     routeUI.setAttribute('class', 'route');
                     routeUI.setAttribute('d', 'M ' + [
-                            sourceSystem.uiCenter[0],
-                            sourceSystem.uiCenter[1],
-                            destSystem.uiCenter[0],
-                            destSystem.uiCenter[1]
+                            sourceRPXY[0],
+                            sourceRPXY[1],
+                            destRPXY[0],
+                            destRPXY[1]
                         ].join(' '));
                     routeUI.setAttribute('marker-end', 'url(#arrowhead)');
                     routesUI.appendChild(routeUI);
@@ -1792,27 +1839,24 @@ ROUTES
 
 
         window.onload = function() {
+            ROUTEPOINT_ANGLE = 360 / ROUTEPOINT_COUNT;
+
             gameSetup();
 
             /* DEBUGGING route points
             var routesUI = document.getElementById('routes');
-            var POINTS_COUNT = 12;
-            var POINTS_DISTANCE = 50;
             objectEach(SYSTEMS, function(systemID, system) {
                 if (system.hazard) {
                     return;
                 }
-                for (var i = 0; i < POINTS_COUNT; i += 1) {
-                    var radians = (360 / POINTS_COUNT) * i * Math.PI / 180;
-                    var dummyXY = system.uiCenter.slice();
-                    dummyXY[0] += POINTS_DISTANCE * Math.cos(radians);
-                    dummyXY[1] += POINTS_DISTANCE * Math.sin(radians);
-                    var circleUI = document.createElementNS(NS.svg, 'circle');
-                    circleUI.setAttribute('class', 'DEBUGGING');
-                    circleUI.setAttribute('cx', dummyXY[0]);
-                    circleUI.setAttribute('cy', dummyXY[1]);
-                    circleUI.setAttribute('r', 3);
-                    routesUI.appendChild(circleUI);
+                for (var rp = 0; rp < ROUTEPOINT_COUNT; rp += 1) {
+                    var rpXY = systemRoutepointGet(system, rp);
+                    var rpUI = document.createElementNS(NS.svg, 'circle');
+                    rpUI.setAttribute('class', 'DEBUGGING');
+                    rpUI.setAttribute('cx', rpXY[0]);
+                    rpUI.setAttribute('cy', rpXY[1]);
+                    rpUI.setAttribute('r', 3);
+                    routesUI.appendChild(rpUI);
                 }
             });
             */
