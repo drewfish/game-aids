@@ -27,6 +27,7 @@ TODO
 FUTURE (in no particular order)
     * customize curved routes
     * at least attempt to get working in other browsers (besides Chrome)
+    * decorate routes based on distance
     * routes automagically snake between systems
     * decorate routes with nav points (and required nav numbers)
     * fairs (set in separate game-level popup)
@@ -1556,7 +1557,7 @@ ROUTES
                 // seller: buyer: true
             },
             ROUTEPOINT_COUNT = 12,
-            ROUTEPOINT_DISTANCE = 50,
+            ROUTEPOINT_DISTANCE = 55,
             ROUTEPOINT_ANGLE;
 
 
@@ -1685,9 +1686,9 @@ ROUTES
                                     isSource: routepoints[rp][routeID]
                                 };
                                 if (routepoints[rp][routeID]) {
-                                    routeDetails[routeID].angle = ROUTES[routeID].enabled.sourceAngle;
+                                    routeDetails[routeID].angle = ROUTES[routeID].enabled.srcAngle;
                                 } else {
-                                    routeDetails[routeID].angle = ROUTES[routeID].enabled.destAngle;
+                                    routeDetails[routeID].angle = ROUTES[routeID].enabled.dstAngle;
                                 }
                             });
                         });
@@ -1723,9 +1724,9 @@ ROUTES
                             routepoints[newRP] = routepoints[newRP] || {};
                             routepoints[newRP][routeID] = details.isSource;
                             if (details.isSource) {
-                                route.enabled.sourceRoutepoint = newRP;
+                                route.enabled.srcRoutepoint = newRP;
                             } else {
-                                route.enabled.destRoutepoint = newRP;
+                                route.enabled.dstRoutepoint = newRP;
                             }
                         }
                     }
@@ -1737,9 +1738,9 @@ ROUTES
 
 
         // returns degrees
-        function routeAngle(source, dest) {
-            var y = dest[1] - source[1],
-                x = dest[0] - source[0],
+        function routeAngle(src, dst) {
+            var y = dst[1] - src[1],
+                x = dst[0] - src[0],
                 angle = Math.atan2(y, x) * 180 / Math.PI;
             if (angle < 0) {
                 angle += 360;
@@ -1762,31 +1763,31 @@ ROUTES
                 if (systemA.raceID && systemB.raceID) {
                     if (RACE_BUYERS[systemA.raceID] && RACE_BUYERS[systemA.raceID][systemB.raceID]) {
                         route.enabled = {
-                            sourceSystemID: systemA.id,
-                            destSystemID: systemB.id,
-                            sourceRaceID: systemA.raceID,
-                            destRaceID: systemB.raceID,
-                            sourceAngle: routeAngle(systemA.uiCenter, systemB.uiCenter)
+                            srcSystemID: systemA.id,
+                            dstSystemID: systemB.id,
+                            srcRaceID: systemA.raceID,
+                            dstRaceID: systemB.raceID,
+                            srcAngle: routeAngle(systemA.uiCenter, systemB.uiCenter)
                         };
-                        route.enabled.destAngle = angleInvert(route.enabled.sourceAngle);
+                        route.enabled.dstAngle = angleInvert(route.enabled.srcAngle);
                     } else if (RACE_BUYERS[systemB.raceID] && RACE_BUYERS[systemB.raceID][systemA.raceID]) {
                         route.enabled = {
-                            sourceSystemID: systemB.id,
-                            destSystemID: systemA.id,
-                            sourceRaceID: systemB.raceID,
-                            destRaceID: systemA.raceID,
-                            sourceAngle: routeAngle(systemB.uiCenter, systemA.uiCenter)
+                            srcSystemID: systemB.id,
+                            dstSystemID: systemA.id,
+                            srcRaceID: systemB.raceID,
+                            dstRaceID: systemA.raceID,
+                            srcAngle: routeAngle(systemB.uiCenter, systemA.uiCenter)
                         };
-                        route.enabled.destAngle = angleInvert(route.enabled.sourceAngle);
+                        route.enabled.dstAngle = angleInvert(route.enabled.srcAngle);
                     }
                     if (route.distance > GAME.maxRouteDistance) {
                         route.enabled = null;
                     }
                     if (route.enabled) {
-                        systemRoutes[route.enabled.sourceSystemID] = systemRoutes[route.enabled.sourceSystemID] || {};
-                        systemRoutes[route.enabled.sourceSystemID][route.id] = route;
-                        systemRoutes[route.enabled.destSystemID] = systemRoutes[route.enabled.destSystemID] || {};
-                        systemRoutes[route.enabled.destSystemID][route.id] = route;
+                        systemRoutes[route.enabled.srcSystemID] = systemRoutes[route.enabled.srcSystemID] || {};
+                        systemRoutes[route.enabled.srcSystemID][route.id] = route;
+                        systemRoutes[route.enabled.dstSystemID] = systemRoutes[route.enabled.dstSystemID] || {};
+                        systemRoutes[route.enabled.dstSystemID][route.id] = route;
                     }
                 }
             });
@@ -1797,14 +1798,14 @@ ROUTES
                     routepoints = {};   // see routepointsDistribute()
                 objectEach(routes, function(routeID, route) {
                     var routepoint;
-                    if (systemID === route.enabled.sourceSystemID) {
-                        routepoint = angleRoutepoint(route.enabled.sourceAngle);
-                        route.enabled.sourceRoutepoint = routepoint;
+                    if (systemID === route.enabled.srcSystemID) {
+                        routepoint = angleRoutepoint(route.enabled.srcAngle);
+                        route.enabled.srcRoutepoint = routepoint;
                         routepoints[routepoint] = routepoints[routepoint] || {};
                         routepoints[routepoint][route.id] = true;
                     } else {
-                        routepoint = angleRoutepoint(route.enabled.destAngle);
-                        route.enabled.destRoutepoint = routepoint;
+                        routepoint = angleRoutepoint(route.enabled.dstAngle);
+                        route.enabled.dstRoutepoint = routepoint;
                         routepoints[routepoint] = routepoints[routepoint] || {};
                         routepoints[routepoint][route.id] = false;
                     }
@@ -1817,10 +1818,10 @@ ROUTES
             var routesUI = document.getElementById('routes');
             objectEach(ROUTES, function(routeID, route) {
                 var routeUI = document.getElementById(routeID),
-                    sourceSystem,
-                    destSystem,
-                    sourceRPXY,
-                    destRPXY;
+                    srcSystem,
+                    dstSystem,
+                    srcRPXY,
+                    dstRPXY;
 
                 // delete, so that we can redraw (if necessary)
                 if (routeUI) {
@@ -1829,18 +1830,18 @@ ROUTES
 
                 // draw
                 if (route.enabled) {
-                    sourceSystem = SYSTEMS[route.enabled.sourceSystemID];
-                    destSystem = SYSTEMS[route.enabled.destSystemID];
-                    sourceRPXY = systemRoutepointGet(sourceSystem, route.enabled.sourceRoutepoint);
-                    destRPXY = systemRoutepointGet(destSystem, route.enabled.destRoutepoint);
+                    srcSystem = SYSTEMS[route.enabled.srcSystemID];
+                    dstSystem = SYSTEMS[route.enabled.dstSystemID];
+                    srcRPXY = systemRoutepointGet(srcSystem, route.enabled.srcRoutepoint);
+                    dstRPXY = systemRoutepointGet(dstSystem, route.enabled.dstRoutepoint);
                     routeUI = document.createElementNS(NS.svg, 'path');
                     routeUI.setAttribute('id', route.id);
                     routeUI.setAttribute('class', 'route');
                     routeUI.setAttribute('d', 'M ' + [
-                            sourceRPXY[0],
-                            sourceRPXY[1],
-                            destRPXY[0],
-                            destRPXY[1]
+                            srcRPXY[0],
+                            srcRPXY[1],
+                            dstRPXY[0],
+                            dstRPXY[1]
                         ].join(' '));
                     routeUI.setAttribute('marker-end', 'url(#arrowhead)');
                     routesUI.appendChild(routeUI);
