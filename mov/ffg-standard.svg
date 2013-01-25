@@ -82,7 +82,7 @@ ROUTES
                 stroke-width: 3;
             }
             #map .system.hazard .boundary {
-                stroke: #402;
+                stroke: #301;
                 stroke-dasharray: 6 3;
             }
             #map .path {
@@ -90,6 +90,13 @@ ROUTES
                 stroke: #004;
                 stroke-width: 3;
                 stroke-dasharray: 6 3;
+            }
+            #map .navpoint {
+                fill: #000;
+                fill-opacity: 0.2;
+                stroke: #301;
+                stroke-width: 1;
+                stroke-opacity: 0.9;
             }
 
             #routes circle.DEBUGGING {
@@ -696,7 +703,7 @@ ROUTES
                     id: 'sCW-sDW',
                     systemA: 'sCW',
                     systemB: 'sDW',
-                    distance: 3,
+                    distance: 2,
                     enabled: null
                 },
                 'sCW-sGH': {
@@ -724,21 +731,21 @@ ROUTES
                     id: 'sCW-sIM',
                     systemA: 'sCW',
                     systemB: 'sIM',
-                    distance: 3,
+                    distance: 4,
                     enabled: null
                 },
                 'sCW-sIW': {
                     id: 'sCW-sIW',
                     systemA: 'sCW',
                     systemB: 'sIW',
-                    distance: 4,
+                    distance: 2,
                     enabled: null
                 },
                 'sCW-sJW': {
                     id: 'sCW-sJW',
                     systemA: 'sCW',
                     systemB: 'sJW',
-                    distance: 3,
+                    distance: 1,
                     enabled: null
                 },
                 'sCW-sMS': {
@@ -766,7 +773,7 @@ ROUTES
                     id: 'sCW-sRP',
                     systemA: 'sCW',
                     systemB: 'sRP',
-                    distance: 3,
+                    distance: 1,
                     enabled: null
                 },
                 'sCW-sSG': {
@@ -780,7 +787,7 @@ ROUTES
                     id: 'sCW-sSN',
                     systemA: 'sCW',
                     systemB: 'sSN',
-                    distance: 4,
+                    distance: 3,
                     enabled: null
                 },
                 'sCW-sWS': {
@@ -1991,38 +1998,39 @@ ROUTES
     ]]></script>
 
 
-    <rect id="background" class="background" x="0" y="0" width="1440" height="800"/>
+    <rect id="background" class="background" x="0" y="0" width="1440" height="800" />
 
     <g id="map">
         <path class="path" d="M 146,35 C 260,14 315,26 369,86" />
-        <path class="path" d="m 229,108 c 77,-61 96,-32 81,47" />
-        <path class="path" d="m 109,209 c -132,157 -59,227 13,249" />
-        <path class="path" d="m 352,337 c 24,32 48,64 69,99" />
-        <path class="path" d="m 284,354 c 113,24 11,149 131,102" />
-        <path class="path" d="m 202,429 c 100,75 212,85 333,53" />
-        <path class="path" d="m 234,543 c 30,-30 60,-17 90,35" />
-        <path class="path" d="m 382,548 c 39,-28 84,-21 131,2" />
-        <path class="path" d="m 86,598 c -74,23 -62,177 12,109" />
+        <path class="path" d="M 229,108 c 77,-61 96,-32 81,47" />
+        <path class="path" d="M 109,209 c -132,157 -59,227 13,249" />
+        <path class="path" d="M 352,337 c 24,32 48,64 69,99" />
+        <path class="path" d="M 284,354 c 113,24 11,149 131,102" />
+        <path class="path" d="M 202,429 c 100,75 212,85 333,53" />
+        <path class="path" d="M 234,543 c 30,-30 60,-17 90,35" />
+        <path class="path" d="M 382,548 c 39,-28 84,-21 131,2" />
+        <path class="path" d="M 86,598 c -74,23 -62,177 12,109" />
         <path class="path" d="M 403,610 C 521,590 517,641 441,734" />
-        <path class="path" d="m 295,724 c 184,-165 -43,152 146,10" />
+        <path class="path" d="M 295,724 c 184,-165 -43,152 146,10" />
         <path class="path" d="M 585,54 C 619,37 652,36 683,63" />
         <path class="path" d="M 735,117 C 702,128 679,145 685,176" />
-        <path class="path" d="m 581,130 c 29,12 59,24 0,56" />
+        <path class="path" d="M 581,130 c 29,12 59,24 0,56" />
         <path class="path" d="M 548,264 C 544,225 530,178 581,185" />
         <path class="path" d="M 669,246 C 640,217 610,198 581,184" />
-        <path class="path" d="m 430,230 c 33,8 57,25 63,61" />
-        <path class="path" d="m 679,560 c 98,-44 99,61 217,13" />
-        <path class="path" d="m 642,390 c 78,2 156,7 236,43" />
-        <path class="path" d="m 797,291 c 55,35 73,85 81,141" />
+        <path class="path" d="M 430,230 c 33,8 57,25 63,61" />
+        <path class="path" d="M 679,560 c 98,-44 99,61 217,13" />
+        <path class="path" d="M 642,390 c 78,2 156,7 236,43" />
+        <path class="path" d="M 797,291 c 55,35 73,85 81,141" />
         <path class="path" d="M 794,57 C 830,30 879,11 985,27" />
-        <path class="path" d="m 1059,157 c 28,48 30,94 -14,138" />
-        <path class="path" d="m 971,152 c -1,35 -10,60 -39,65" />
-        <path class="path" d="m 858,185 c 18,0 39,4 75,32" />
+        <path class="path" d="M 1059,157 c 28,48 30,94 -14,138" />
+        <path class="path" d="M 971,152 c -1,35 -10,60 -39,65" />
+        <path class="path" d="M 858,185 c 18,0 39,4 75,32" />
         <path class="path" d="M 970,318 C 971,281 960,246 931,216" />
-        <path class="path" d="m 895,572 c 20,31 54,48 94,60" />
-        <path class="path" d="m 1056,448 c -107,142 131,75 41,188" />
-        <path class="path" d="m 878,732 c 26,27 62,43 130,27" />
-        <path class="path" d="m 433,432 c 5,-22 19,-40 52,-49" />
+        <path class="path" d="M 895,572 c 20,31 54,48 94,60" />
+        <path class="path" d="M 1056,448 c -107,142 131,75 41,188" />
+        <path class="path" d="M 878,732 c 26,27 62,43 130,27" />
+        <path class="path" d="M 433,432 c 5,-22 19,-40 52,-49" />
+        <path class="path" d="M 92,392 l -37,24" />
 
         <g id="sAS" class="system" >
             <path class="boundary" d="m 440,734 c 54,0 172,-72 172,-72 0,0 70,-75 117,-77 60,0 161,83 161,83 0,0 -12,64 -12,64 -69,64 -279,32 -279,32 0,0 -99,31 -159,-30 z" />
@@ -2089,6 +2097,15 @@ ROUTES
             <ellipse class="boundary" cx="767" cy="221" rx="104" ry="73" />
             <use class="thumb" x="752" y="206" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick('sWW');" />
         </g>
+
+        <circle class="navpoint"  cx="91" cy="393" r="10" />
+        <circle class="navpoint" cx="485" cy="382" r="10" />
+        <circle class="navpoint" cx="493" cy="290" r="10" />
+        <circle class="navpoint" cx="547" cy="263" r="10" />
+        <circle class="navpoint" cx="586" cy="185" r="10" />
+        <circle class="navpoint" cx="876" cy="432" r="10" />
+        <circle class="navpoint" cx="893" cy="573" r="10" />
+        <circle class="navpoint" cx="933" cy="217" r="10" />
     </g>
 
     <g id="routes">
