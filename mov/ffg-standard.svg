@@ -17,7 +17,6 @@ LICENSE
 
 TODO
     * decorate routes
-    * customize routepoints for certain routes (e.g. routes between edge systems)
     * game config popup
     * nice icons
     * map: simple markers of nav points
@@ -691,6 +690,7 @@ ROUTES
                     systemA: 'sAS',
                     systemB: 'sWS',
                     distance: 1,
+                    routepoints: [1, 5],
                     enabled: null
                 },
                 'sAS-sWW': {
@@ -726,6 +726,7 @@ ROUTES
                     systemA: 'sCW',
                     systemB: 'sIB',
                     distance: 2,
+                    routepoints: [9, 6],
                     enabled: null
                 },
                 'sCW-sIM': {
@@ -740,6 +741,7 @@ ROUTES
                     systemA: 'sCW',
                     systemB: 'sIW',
                     distance: 2,
+                    routepoints: [2, 11],
                     enabled: null
                 },
                 'sCW-sJW': {
@@ -747,6 +749,7 @@ ROUTES
                     systemA: 'sCW',
                     systemB: 'sJW',
                     distance: 1,
+                    routepoints: [6, 8],
                     enabled: null
                 },
                 'sCW-sMS': {
@@ -831,6 +834,7 @@ ROUTES
                     systemA: 'sDW',
                     systemB: 'sIM',
                     distance: 2,
+                    routepoints: [10, 8],
                     enabled: null
                 },
                 'sDW-sIW': {
@@ -873,6 +877,7 @@ ROUTES
                     systemA: 'sDW',
                     systemB: 'sRP',
                     distance: 1,
+                    routepoints: [8, 9],
                     enabled: null
                 },
                 'sDW-sSG': {
@@ -1188,6 +1193,7 @@ ROUTES
                     systemA: 'sIM',
                     systemB: 'sPP',
                     distance: 1,
+                    routepoints: [2, 9],
                     enabled: null
                 },
                 'sIM-sRP': {
@@ -1216,6 +1222,7 @@ ROUTES
                     systemA: 'sIM',
                     systemB: 'sWS',
                     distance: 2,
+                    routepoints: [12, 12],
                     enabled: null
                 },
                 'sIM-sWW': {
@@ -1230,6 +1237,7 @@ ROUTES
                     systemA: 'sIW',
                     systemB: 'sJW',
                     distance: 1,
+                    routepoints: [6, 5],
                     enabled: null
                 },
                 'sIW-sMS': {
@@ -1279,6 +1287,7 @@ ROUTES
                     systemA: 'sIW',
                     systemB: 'sWS',
                     distance: 2,
+                    routepoints: [3, 3],
                     enabled: null
                 },
                 'sIW-sWW': {
@@ -1314,6 +1323,7 @@ ROUTES
                     systemA: 'sJW',
                     systemB: 'sRP',
                     distance: 1,
+                    routepoints: [7, 6],
                     enabled: null
                 },
                 'sJW-sSG': {
@@ -1770,6 +1780,10 @@ ROUTES
                             srcAngle: routeAngle(systemA.uiCenter, systemB.uiCenter)
                         };
                         route.enabled.dstAngle = angleInvert(route.enabled.srcAngle);
+                        if (route.routepoints) {
+                            route.enabled.srcRoutepoint = route.routepoints[0];
+                            route.enabled.dstRoutepoint = route.routepoints[1];
+                        }
                     } else if (RACE_BUYERS[systemB.raceID] && RACE_BUYERS[systemB.raceID][systemA.raceID]) {
                         route.enabled = {
                             srcSystemID: systemB.id,
@@ -1779,6 +1793,10 @@ ROUTES
                             srcAngle: routeAngle(systemB.uiCenter, systemA.uiCenter)
                         };
                         route.enabled.dstAngle = angleInvert(route.enabled.srcAngle);
+                        if (route.routepoints) {
+                            route.enabled.srcRoutepoint = route.routepoints[1];
+                            route.enabled.dstRoutepoint = route.routepoints[0];
+                        }
                     }
                     if (route.distance > GAME.maxRouteDistance) {
                         route.enabled = null;
@@ -1799,13 +1817,21 @@ ROUTES
                 objectEach(routes, function(routeID, route) {
                     var routepoint;
                     if (systemID === route.enabled.srcSystemID) {
-                        routepoint = angleRoutepoint(route.enabled.srcAngle);
-                        route.enabled.srcRoutepoint = routepoint;
+                        if (route.enabled.srcRoutepoint) {
+                            routepoint = route.enabled.srcRoutepoint;
+                        } else {
+                            routepoint = angleRoutepoint(route.enabled.srcAngle);
+                            route.enabled.srcRoutepoint = routepoint;
+                        }
                         routepoints[routepoint] = routepoints[routepoint] || {};
                         routepoints[routepoint][route.id] = true;
                     } else {
-                        routepoint = angleRoutepoint(route.enabled.dstAngle);
-                        route.enabled.dstRoutepoint = routepoint;
+                        if (route.enabled.dstRoutepoint) {
+                            routepoint = route.enabled.dstRoutepoint;
+                        } else {
+                            routepoint = angleRoutepoint(route.enabled.dstAngle);
+                            route.enabled.dstRoutepoint = routepoint;
+                        }
                         routepoints[routepoint] = routepoints[routepoint] || {};
                         routepoints[routepoint][route.id] = false;
                     }
