@@ -7,7 +7,7 @@ PURPOSE
     time studying the board than this tool.
 
 NON-PURPOSES
-    * make decisions for player, or suggest courses of action
+    * make decisions for player, or suggest/imply courses of action
     * contain all information
     * replace the board or pieces on it
 
@@ -16,16 +16,19 @@ LICENSE
     related or neighboring rights to this work.
 
 TODO
-    * routes
+    * decorate routes
+    * customize routepoints for certain routes (e.g. routes between edge systems)
     * game config popup
     * nice icons
+    * map: simple markers of nav points
     * map: system names
     * map: race names
 
-FUTURE
+FUTURE (in no particular order)
+    * customize curved routes
     * at least attempt to get working in other browsers (besides Chrome)
     * routes automagically snake between systems
-    * mark routes with navigation points (and required pilot numbers)
+    * decorate routes with nav points (and required nav numbers)
     * fairs (set in separate game-level popup)
     * demands (set in separate game-level popup)
     * tech (set in system-level popup)
@@ -34,44 +37,11 @@ FUTURE
     * rotatable UI (for tablets)
     * rotate fairs (special encounter card)
     * see if HTML5 pushState() works here
-    * per-race flag icon (player set, for missions or other reasons)
+    * player-set race or system flags (for missions, or other reasons)
+    * finesse colors more
 
 
 ROUTES
-    each system has a number of "route points" around the thumb
-        box or star
-
-    each system can have up to -13- routes
-        5 goods sold
-        5 goods bought
-        1 to GH for fairs
-        2 for black market
-
-    ALGORITHM A
-        create lists of routes
-            consider races, direction, etc
-        for every system with at least one route
-            for each route
-                calculate angle, snapped to nearest routepoint
-                save as list of routepoints
-            adjust list of routepoints if collisions
-
-    ALGORITHM B
-        create lists of routes
-            consider races, direction, etc
-        for every system with at least one route
-            for each route
-                calculate angle
-            adjust list of angles of all routes in the system
-                calculate average space between route angles
-                if too small, bump to minimum (say 30degrees)
-                calculate average angle
-                    !!warning:  this is tricky with polar math!!
-                evenly distribute routes around average angle
-                    ... using average space between route angles
-                    TODO:  how to make sure that routes are assigned to "nearest" routepoint?
-                        (kinda same issue as ALGORITHM A)
-
 
     DECORATIONS
         buy             source
@@ -123,7 +93,7 @@ ROUTES
             }
 
             #routes circle.DEBUGGING {
-                fill: #F00F00;
+                fill: #013;
                 stroke: none;
             }
             #routes .route {
@@ -1583,8 +1553,24 @@ ROUTES
             ROUTEPOINT_ANGLE;
 
 
+        // fisher-yates
+        // http://stackoverflow.com/questions/2450954/how-to-randomize-a-javascript-array
+        function DEBUGarrayShuffle(myArray) {
+            var i = myArray.length, j, tempi, tempj;
+            if ( i == 0 ) return false;
+            while ( --i ) {
+                j = Math.floor( Math.random() * ( i + 1 ) );
+                tempi = myArray[i];
+                tempj = myArray[j];
+                myArray[i] = tempj;
+                myArray[j] = tempi;
+            }
+            return myArray;
+        }
+
+
         function objectEach(obj, cb) {
-            Object.keys(obj).forEach(function (key) {
+            Object.keys(obj).forEach(function(key) {
                 cb(key, obj[key]);
             });
         }
@@ -1596,7 +1582,8 @@ ROUTES
 
 
         function angleRoutepoint(angle) {
-            return Math.round(angle / ROUTEPOINT_ANGLE);
+            var rp = Math.round(angle / ROUTEPOINT_ANGLE);
+            return routepointWrap(rp);
         }
 
 
@@ -1618,10 +1605,127 @@ ROUTES
         }
 
 
+        // we need to be able to loop around
+        function routepointWrap(rp) {
+            // Modulus on a negative number gives us a negative number,
+            // so we shift it higher so that it's always positive to start.
+            return (rp + ROUTEPOINT_COUNT) % ROUTEPOINT_COUNT;
+        }
+
+
         // detect and handle collisions at routepoints
         // routepoints is routepoint: routeID: isSource
         function routepointsDistribute(systemID, routepoints) {
-            // TODO
+            var collision,
+                iterations = 0,
+                runs,
+                currentRun,
+                rp;
+
+            do {
+                // find "runs" of contiguous routepoints
+                runs = [];
+                currentRun = [];
+                for (rp = 0; rp < ROUTEPOINT_COUNT; rp += 1) {
+                    if (routepoints[rp]) {
+                        currentRun.push(rp);
+                    } else if (currentRun.length) {
+                        runs.push(currentRun);
+                        currentRun = [];
+                    }
+                }
+                // if we wrap around
+                if (currentRun.length) {
+                    if (routepoints[0] && runs[0]) {
+                        // merge with first run
+                        Array.prototype.push.apply(runs[0], currentRun);
+                    } else {
+                        runs.push(currentRun);
+                    }
+                }
+
+                collision = false;
+                runs.forEach(function(run) {
+                    var rp_count,
+                        route_count,
+                        routeIDs,
+                        routeDetails,
+                        rp_center,
+                        rp_start,
+                        i,
+                        newRP,
+                        routeID,
+                        route,
+                        details;
+
+                    rp_count = 0;
+                    route_count = 0;
+                    run.forEach(function(rp) {
+                        rp_count += 1;
+                        route_count += Object.keys(routepoints[rp]).length;
+                    });
+
+                    // collision (detected with pigeonhole rule)
+                    if (route_count > rp_count) {
+                        collision = true;
+                        routeIDs = [];
+                        routeDetails = {};
+                        run.forEach(function(rp) {
+                            objectEach(routepoints[rp], function(routeID) {
+                                routeIDs.push(routeID);
+                                routeDetails[routeID] = {
+                                    oldRP: rp,
+                                    isSource: routepoints[rp][routeID]
+                                };
+                                if (routepoints[rp][routeID]) {
+                                    routeDetails[routeID].angle = ROUTES[routeID].enabled.sourceAngle;
+                                } else {
+                                    routeDetails[routeID].angle = ROUTES[routeID].enabled.destAngle;
+                                }
+                            });
+                        });
+
+                        // Sort by angle, which is tricky because they wrap around.
+                        // What we're doing below isn't that great, but works well enough
+                        // as long as we don't get jammed up with a huge run.
+                        routeIDs.sort(function(aID, bID) {
+                            var aDetails = routeDetails[aID],
+                                bDetails = routeDetails[bID];
+                            if (aDetails.angle < (3*ROUTEPOINT_ANGLE) &&
+                                bDetails.angle >= (360 - (3*ROUTEPOINT_ANGLE))) {
+                                return 1;
+                            }
+                            if (bDetails.angle < ROUTEPOINT_ANGLE &&
+                                aDetails.angle >= (360 - ROUTEPOINT_ANGLE)) {
+                                return -1;
+                            }
+                            return aDetails.angle - bDetails.angle;
+                        });
+
+                        rp_center = run[Math.floor(run.length/2)];
+                        rp_start = rp_center - Math.floor(route_count / 2);
+                        rp_start = routepointWrap(rp_start);
+                        for (i = 0; i < route_count; i += 1) {
+                            newRP = routepointWrap(rp_start + i);
+                            routeID = routeIDs.shift();
+                            route = ROUTES[routeID];
+                            details = routeDetails[routeID];
+
+                            // move routepoint
+                            delete routepoints[details.oldRP][routeID];
+                            routepoints[newRP] = routepoints[newRP] || {};
+                            routepoints[newRP][routeID] = details.isSource;
+                            if (details.isSource) {
+                                route.enabled.sourceRoutepoint = newRP;
+                            } else {
+                                route.enabled.destRoutepoint = newRP;
+                            }
+                        }
+                    }
+                });
+
+                iterations += 1;
+            } while(collision && (iterations < ROUTEPOINT_COUNT));
         }
 
 
@@ -1633,7 +1737,7 @@ ROUTES
             if (angle < 0) {
                 angle += 360;
             }
-            return angle;
+            return Math.round(angle);
         }
 
 
@@ -1711,8 +1815,13 @@ ROUTES
                     sourceRPXY,
                     destRPXY;
 
-                // create
-                if (route.enabled && !routeUI) {
+                // delete, so that we can redraw (if necessary)
+                if (routeUI) {
+                    routesUI.removeChild(routeUI);
+                }
+
+                // draw
+                if (route.enabled) {
                     sourceSystem = SYSTEMS[route.enabled.sourceSystemID];
                     destSystem = SYSTEMS[route.enabled.destSystemID];
                     sourceRPXY = systemRoutepointGet(sourceSystem, route.enabled.sourceRoutepoint);
@@ -1728,18 +1837,6 @@ ROUTES
                         ].join(' '));
                     routeUI.setAttribute('marker-end', 'url(#arrowhead)');
                     routesUI.appendChild(routeUI);
-                    return;
-                }
-
-                // update
-                if (route.enabled && routeUI) {
-                    return;
-                }
-
-                // delete
-                if (routeUI && !route.enabled) {
-                    routesUI.removeChild(routeUI);
-                    return;
                 }
             });
         }
@@ -1871,6 +1968,23 @@ ROUTES
                     rpUI.setAttribute('r', 3);
                     routesUI.appendChild(rpUI);
                 }
+            });
+            */
+
+            /* DEBUGGING random routes
+            console.log('================================================== RANDOM');
+            var systemIDs = DEBUGarrayShuffle(Object.keys(SYSTEMS));
+            var raceIDs = Object.keys(RACES);
+            console.log(JSON.stringify(systemIDs));
+            systemIDs.forEach(function(systemID) {
+                if (SYSTEMS[systemID].hazard) {
+                    return;
+                }
+                if ('sGH' === systemID) {
+                    return;
+                }
+                var raceID = raceIDs.shift();
+                systemRaceSet(systemID, raceID);
             });
             */
         };
