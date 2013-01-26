@@ -16,29 +16,34 @@ LICENSE
     related or neighboring rights to this work.
 
 TODO
-    * decorate routes
-    * game config popup
-    * nice icons
-    * map: simple markers of nav points
     * map: system names
     * map: race names
+    * nice icons
+    * try in other browsers (besides Chrome)
 
 FUTURE (in no particular order)
-    * customize curved routes
-    * at least attempt to get working in other browsers (besides Chrome)
-    * decorate routes based on distance
-    * routes automagically snake between systems
-    * decorate routes with nav points (and required nav numbers)
-    * fairs (set in separate game-level popup)
-    * demands (set in separate game-level popup)
-    * tech (set in system-level popup)
-    * black market
+    * routes
+        * customized curving
+        * automagically snake between systems
+        * decorate based on distance
+        * decorate with nav points (and required numbers)
+        * draw -all- possible routes between systems, gently dipping into intermediate systems
+    * game config popup
+        * enable black market
+        * highlight tech
+    * fairs popup
+        * rotate (special encounter card)
+    * system popup
+        * player-set flags (for missions, or other reasons)
+    * race popup
+        * demands
+        * player-set flags (for tech, or other reasons)
     * telegates? (they affect route distances, if usable)
-    * rotatable UI (for tablets)
-    * rotate fairs (special encounter card)
-    * see if HTML5 pushState() works here
-    * player-set race or system flags (for missions, or other reasons)
-    * finesse colors more
+    * UI
+        * rotatable (for tablets)
+        * see if HTML5 pushState() works here
+        * finesse colors more
+        * get working in other browsers (besides Chrome)
 
 
 ROUTES
@@ -99,14 +104,27 @@ ROUTES
                 stroke-opacity: 0.9;
             }
 
-            #routes circle.DEBUGGING {
-                fill: #013;
-                stroke: none;
-            }
-            #routes .route {
+            #routes .route .path {
                 fill: none;
                 stroke: #031;
                 stroke-width: 3;
+                stroke-linecap: butt;
+            }
+            #routes .route text {
+                fill: #031;
+                stroke: none;
+            }
+            #routes .route text.dst {
+                fill: #052;
+            }
+            #routes .route text.left {
+                text-anchor: start;
+            }
+            #routes .route text.middle {
+                text-anchor: middle;
+            }
+            #routes .route text.right {
+                text-anchor: end;
             }
             .arrowhead {
                 fill: #031;
@@ -139,14 +157,6 @@ ROUTES
             .icon rect {
                 fill: #002;
                 stroke: none;
-            }
-
-            #crossx , #crossy {
-                stroke: #FFF;
-                stroke-width: 1px;
-            }
-            #debug {
-                fill: #CCF;
             }
         ]]></style>
 
@@ -216,12 +226,12 @@ ROUTES
         </symbol>
 
         <marker id="arrowhead"
-            viewBox="0 0 9 9" preserveAspectRatio="none"
-            refX="5" refY="5"
+            viewBox="0 0 10 10" preserveAspectRatio="none"
+            refX="7" refY="5"
             markerUnits="strokeWidth"
-            markerWidth="6" markerHeight="3"
+            markerWidth="2" markerHeight="4"
             orient="auto" >
-            <path class="arrowhead" d="M 0,0 9,5, 0,9 z" />
+            <path class="arrowhead" d="M 0,0 10,5, 0,10 z" />
         </marker>
     </defs>
     <script type="text/ecmascript"><![CDATA[
@@ -778,6 +788,7 @@ ROUTES
                     systemA: 'sCW',
                     systemB: 'sRP',
                     distance: 1,
+                    routepoints: [6, 5],
                     enabled: null
                 },
                 'sCW-sSG': {
@@ -1566,6 +1577,8 @@ ROUTES
                 // see gameSetup()
                 // seller: buyer: true
             },
+            FONTHEIGHT_FULL = 12,
+            FONTHEIGHT_HALF = 5,
             ROUTEPOINT_COUNT = 12,
             ROUTEPOINT_DISTANCE = 55,
             ROUTEPOINT_ANGLE;
@@ -1573,7 +1586,7 @@ ROUTES
 
         // fisher-yates
         // http://stackoverflow.com/questions/2450954/how-to-randomize-a-javascript-array
-        function DEBUGarrayShuffle(myArray) {
+        function arrayShuffle(myArray) {
             var i = myArray.length, j, tempi, tempj;
             if ( i == 0 ) return false;
             while ( --i ) {
@@ -1609,8 +1622,8 @@ ROUTES
         function systemRoutepointGet(system, rp) {
             var radians = ROUTEPOINT_ANGLE * rp * Math.PI / 180;
             var rpXY = system.uiCenter.slice();
-            rpXY[0] += ROUTEPOINT_DISTANCE * Math.cos(radians);
-            rpXY[1] += ROUTEPOINT_DISTANCE * Math.sin(radians);
+            rpXY[0] += Math.round(ROUTEPOINT_DISTANCE * Math.cos(radians));
+            rpXY[1] += Math.round(ROUTEPOINT_DISTANCE * Math.sin(radians));
             return rpXY;
         }
 
@@ -1628,6 +1641,43 @@ ROUTES
             // Modulus on a negative number gives us a negative number,
             // so we shift it higher so that it's always positive to start.
             return (rp + ROUTEPOINT_COUNT) % ROUTEPOINT_COUNT;
+        }
+
+
+        // calculates the alignment for a textbox at the routepoint
+        // returns [class, x, y]
+        //      class is a class name to add
+        //      x is an x-coordinate adjustment
+        //      y is a y-coordinate adjustment
+        function routepointTextAlign(rp) {
+            var align = ['', 0, 0],
+                angle;
+            rp = rp % ROUTEPOINT_COUNT;
+            angle = rp * ROUTEPOINT_ANGLE;
+            if (angle === 0) {
+                align[1] += -1;
+                align[2] += FONTHEIGHT_HALF;
+            } else if (angle < 180) {
+                align[2] += -1;
+            } else if (angle === 180) {
+                align[1] += 1;
+                align[2] += FONTHEIGHT_HALF;
+            } else {
+                align[2] += FONTHEIGHT_FULL + 1;
+            }
+            angle = (angle + 90) % 360;
+            if (angle === 0) {
+                align[0] = 'middle';
+            } else if (angle < 180) {
+                align[0] = 'right';
+                align[1] += -1;
+            } else if (angle === 180) {
+                align[0] = 'middle';
+            } else {
+                align[0] = 'left';
+                align[1] += 1;
+            }
+            return align;
         }
 
 
@@ -1840,14 +1890,19 @@ ROUTES
             });
 
             // update the UI
-            // TODO:  draw real UI
             var routesUI = document.getElementById('routes');
             objectEach(ROUTES, function(routeID, route) {
                 var routeUI = document.getElementById(routeID),
+                    pathUI,
+                    srcUI,
+                    dstUI,
                     srcSystem,
                     dstSystem,
                     srcRPXY,
-                    dstRPXY;
+                    dstRPXY,
+                    good,
+                    srcAlign,
+                    dstAlign;
 
                 // delete, so that we can redraw (if necessary)
                 if (routeUI) {
@@ -1860,16 +1915,37 @@ ROUTES
                     dstSystem = SYSTEMS[route.enabled.dstSystemID];
                     srcRPXY = systemRoutepointGet(srcSystem, route.enabled.srcRoutepoint);
                     dstRPXY = systemRoutepointGet(dstSystem, route.enabled.dstRoutepoint);
-                    routeUI = document.createElementNS(NS.svg, 'path');
+                    good = RACES[route.enabled.srcRaceID].good;
+
+                    routeUI = document.createElementNS(NS.svg, 'g');
                     routeUI.setAttribute('id', route.id);
                     routeUI.setAttribute('class', 'route');
-                    routeUI.setAttribute('d', 'M ' + [
-                            srcRPXY[0],
-                            srcRPXY[1],
-                            dstRPXY[0],
-                            dstRPXY[1]
+
+                    pathUI = document.createElementNS(NS.svg, 'path');
+                    pathUI.setAttribute('class', 'path');
+                    pathUI.setAttribute('d', 'M ' + [
+                            srcRPXY[0], srcRPXY[1],
+                            dstRPXY[0], dstRPXY[1]
                         ].join(' '));
-                    routeUI.setAttribute('marker-end', 'url(#arrowhead)');
+                    pathUI.setAttribute('marker-end', 'url(#arrowhead)');
+                    routeUI.appendChild(pathUI);
+
+                    srcAlign = routepointTextAlign(route.enabled.srcRoutepoint);
+                    srcUI = document.createElementNS(NS.svg, 'text');
+                    srcUI.setAttribute('class', 'src ' + srcAlign[0]);
+                    srcUI.setAttribute('x', srcRPXY[0] + srcAlign[1]);
+                    srcUI.setAttribute('y', srcRPXY[1] + srcAlign[2]);
+                    srcUI.textContent = good.buy;
+                    routeUI.appendChild(srcUI);
+
+                    dstAlign = routepointTextAlign(route.enabled.dstRoutepoint);
+                    dstUI = document.createElementNS(NS.svg, 'text');
+                    dstUI.setAttribute('class', 'dst ' + dstAlign[0]);
+                    dstUI.setAttribute('x', dstRPXY[0] + dstAlign[1]);
+                    dstUI.setAttribute('y', dstRPXY[1] + dstAlign[2]);
+                    dstUI.textContent = good.sell;
+                    routeUI.appendChild(dstUI);
+
                     routesUI.appendChild(routeUI);
                 }
             });
@@ -1988,6 +2064,10 @@ ROUTES
             gameSetup();
 
             /* DEBUGGING route points
+            #routes circle.DEBUGGING {
+                fill: #013;
+                stroke: none;
+            }
             var routesUI = document.getElementById('routes');
             objectEach(SYSTEMS, function(systemID, system) {
                 if (system.hazard) {
@@ -2005,22 +2085,21 @@ ROUTES
             });
             */
 
-            /* DEBUGGING random routes
-            console.log('================================================== RANDOM');
-            var systemIDs = DEBUGarrayShuffle(Object.keys(SYSTEMS));
-            var raceIDs = Object.keys(RACES);
-            console.log(JSON.stringify(systemIDs));
-            systemIDs.forEach(function(systemID) {
-                if (SYSTEMS[systemID].hazard) {
-                    return;
-                }
-                if ('sGH' === systemID) {
-                    return;
-                }
-                var raceID = raceIDs.shift();
-                systemRaceSet(systemID, raceID);
-            });
-            */
+            if ('#random' === window.location.hash) {
+                var systemIDs = arrayShuffle(Object.keys(SYSTEMS));
+                console.log(JSON.stringify(systemIDs));
+                var raceIDs = Object.keys(RACES);
+                systemIDs.forEach(function(systemID) {
+                    if (SYSTEMS[systemID].hazard) {
+                        return;
+                    }
+                    if ('sGH' === systemID) {
+                        return;
+                    }
+                    var raceID = raceIDs.shift();
+                    systemRaceSet(systemID, raceID);
+                });
+            }
         };
     ]]></script>
 
@@ -2208,22 +2287,4 @@ ROUTES
             </g>
         </svg>
     </g>
-
-<!-- DEBUGGING
-    <line id="crossx" x1="600" x2="600" y1="0" y2="800" style="stroke:#082;" />
-    <line id="crossy" x1="0" x2="1200" y1="400" y2="400" style="stroke:#082;" />
-    <text id="debug" x="1200" y="780">...</text>
-    <script type="text/ecmascript"><![CDATA[
-        var bg = document.getElementById('background');
-        var crossx = document.getElementById('crossx');
-        var crossy = document.getElementById('crossy');
-        var debug = document.getElementById('debug');
-        bg.addEventListener('mousemove', function(evt) {
-            debug.textContent = evt.offsetX + ',' + evt.offsetY;
-            crossx.x1.baseVal.value = crossx.x2.baseVal.value = evt.offsetX;
-            crossy.y1.baseVal.value = crossy.y2.baseVal.value = evt.offsetY;
-        });
-    ]]></script>
--->
-
 </svg>
