@@ -1610,6 +1610,37 @@ ROUTES
         }
 
 
+        function domClassAdd(node, addC) {
+            var cls;
+            if (('object' === typeof node.classList) && ('function' === typeof node.classList.add)) {
+                node.classList.add(addC);
+            } else {
+                cls = node.getAttribute('class') || '';
+                cls = cls.split(' ');
+                cls.push(addC);
+                node.setAttribute('class', cls.join(' '));
+            }
+        }
+
+
+        function domClassRemove(node, rmC) {
+            var oldCls,
+                newCls = [];
+            if (('object' === typeof node.classList) && ('function' === typeof node.classList.remove)) {
+                node.classList.remove(rmC);
+            } else {
+                oldCls = node.getAttribute('class') || '';
+                oldCls = oldCls.split(' ');
+                oldCls.forEach(function(haveC) {
+                    if (haveC !== rmC) {
+                        newCls.push(haveC);
+                    }
+                });
+                node.setAttribute('class', newCls.join(' '));
+            }
+        }
+
+
         function angleInvert(angle) {
             return (angle + 180) % 360;
         }
@@ -1970,13 +2001,13 @@ ROUTES
                     evt.stopPropagation();
                     evt.preventDefault();
                 };
-                raceUI.classList.add('disabled');
+                domClassAdd(raceUI, 'disabled');
             });
 
             // enable available race icons
             races.forEach(function(raceID) {
                 raceUI = raceUIs[raceID];
-                raceUI.classList.remove('disabled');
+                domClassRemove(raceUI, 'disabled');
                 raceUI.onclick = function() {
                     popupUI.style.display = 'none';
                     systemRaceSet(systemID, raceID);
