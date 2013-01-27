@@ -16,7 +16,6 @@ LICENSE
     related or neighboring rights to this work.
 
 TODO
-    * finesse colors more (less dark)
     * nice icons
     * try in other browsers (besides Chrome)
 
@@ -66,7 +65,7 @@ ROUTES
     xmlns:xlink="http://www.w3.org/1999/xlink"
     xmlns="http://www.w3.org/2000/svg"
     version="1.1"
-    width="1440px"
+    width="1200px"
     height="800px">
 
     <defs>
@@ -76,16 +75,13 @@ ROUTES
                 font-size: 12px;
             }
             .background { 
-                fill: #002;
+                fill: #003;
                 stroke: none;
             }
 
-            #map .grid {
-                stroke: #114;
-            }
             #map .system .boundary {
                 fill: none;
-                stroke: #004;
+                stroke: #006;
                 stroke-width: 3;
             }
             #map .system.hazard .boundary {
@@ -93,36 +89,36 @@ ROUTES
                 stroke-dasharray: 6 3;
             }
             #map .system .name {
-                fill: #116;
+                fill: #118;
                 stroke: none;
                 text-anchor: middle;
             }
             #map .path {
                 fill: none;
-                stroke: #004;
+                stroke: #006;
                 stroke-width: 3;
                 stroke-dasharray: 6 3;
             }
             #map .navpoint {
                 fill: #000;
                 fill-opacity: 0.2;
-                stroke: #301;
+                stroke: #401;
                 stroke-width: 1;
                 stroke-opacity: 0.9;
             }
 
             #routes .route .path {
                 fill: none;
-                stroke: #031;
+                stroke: #041;
                 stroke-width: 3;
                 stroke-linecap: butt;
             }
             #routes .route text {
-                fill: #031;
+                fill: #041;
                 stroke: none;
             }
             #routes .route text.dst {
-                fill: #052;
+                fill: #072;
             }
             #routes .route text.left {
                 text-anchor: start;
@@ -134,7 +130,7 @@ ROUTES
                 text-anchor: end;
             }
             .arrowhead {
-                fill: #031;
+                fill: #041;
                 stroke: none;
             }
 
@@ -146,7 +142,7 @@ ROUTES
                 fill-opacity: 0.4;
             }
             .popup .background {
-                stroke: #004;
+                stroke: #006;
                 stroke-width: 3;
             }
             .popup .disabled {
@@ -162,7 +158,7 @@ ROUTES
                 stroke: none;
             }
             .icon rect {
-                fill: #002;
+                fill: #003;
                 stroke: none;
             }
         ]]></style>
@@ -2102,7 +2098,7 @@ ROUTES
     ]]></script>
 
 
-    <rect id="background" class="background" x="0" y="0" width="1440" height="800" />
+    <rect id="background" class="background" x="0" y="0" width="1200" height="800" />
 
     <g id="map">
         <path class="path" d="M 146,35 C 260,14 315,26 369,86" />
