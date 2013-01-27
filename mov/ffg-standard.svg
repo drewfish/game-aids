@@ -17,6 +17,7 @@ LICENSE
 
 TODO
     * nice icons
+    * version number
 
 FUTURE (in no particular order)
     * routes
@@ -35,6 +36,7 @@ FUTURE (in no particular order)
     * race popup
         * demands
         * player-set flags (for tech, or other reasons)
+    * credits popup
     * telegates? (they affect route distances, if usable)
     * UI
         * rotatable (for tablets)
@@ -277,7 +279,7 @@ ROUTES
                 },
                 sIB: {
                     id: 'sIB',
-                    name: 'Intersteller Biosphere',
+                    name: 'Interstellar Biosphere',
                     sector: '00',
                     uiCenter: [ 348, 245 ],
                     raceID: null
@@ -319,7 +321,7 @@ ROUTES
                 },
                 sPP: {
                     id: 'sPP',
-                    name: 'Poluted Planet',
+                    name: 'Polluted Planet',
                     sector: '10',
                     uiCenter: [ 1041, 372 ],
                     raceID: null
@@ -2190,7 +2192,7 @@ ROUTES
             <use class="thumb" x="593"  y="505" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick('sGP');" />
         </g>
         <g id="sIB" class="system" >
-            <text class="name" x="362" y="311">Intersteller Biosphere</text>
+            <text class="name" x="362" y="311">Interstellar Biosphere</text>
             <text class="name race" x="332" y="167"></text>
             <ellipse class="boundary" cx="348" cy="245" rx="100" ry="80" transform="rotate(55 348,245)" />
             <use class="thumb" x="333" y="230" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick('sIB');" />
@@ -2226,7 +2228,7 @@ ROUTES
             <use class="thumb" x="552" y="326" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick('sNH');" />
         </g>
         <g id="sPP" class="system" >
-            <text class="name" x="1041" y="440">Poluted Planet</text>
+            <text class="name" x="1041" y="440">Polluted Planet</text>
             <text class="name race" x="1041" y="309"></text>
             <ellipse class="boundary" cx="1041" cy="372" rx="102" ry="77" />
             <use class="thumb" x="1026" y="357" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick('sPP');" />
