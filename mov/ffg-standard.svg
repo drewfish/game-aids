@@ -81,44 +81,44 @@ ROUTES
 
             #map .system .boundary {
                 fill: none;
-                stroke: #006;
+                stroke: #009;
                 stroke-width: 3;
             }
             #map .system.hazard .boundary {
-                stroke: #301;
+                stroke: #601;
                 stroke-dasharray: 6 3;
             }
             #map .system .name {
-                fill: #118;
+                fill: #22A;
                 stroke: none;
                 text-anchor: middle;
             }
             #map .path {
                 fill: none;
-                stroke: #006;
+                stroke: #009;
                 stroke-width: 3;
                 stroke-dasharray: 6 3;
             }
             #map .navpoint {
                 fill: #000;
                 fill-opacity: 0.2;
-                stroke: #401;
-                stroke-width: 1;
+                stroke: #601;
+                stroke-width: 2;
                 stroke-opacity: 0.9;
             }
 
             #routes .route .path {
                 fill: none;
-                stroke: #041;
+                stroke: #051;
                 stroke-width: 3;
                 stroke-linecap: butt;
             }
             #routes .route text {
-                fill: #041;
+                fill: #061;
                 stroke: none;
             }
             #routes .route text.dst {
-                fill: #072;
+                fill: #0A3;
             }
             #routes .route text.left {
                 text-anchor: start;
@@ -130,7 +130,7 @@ ROUTES
                 text-anchor: end;
             }
             .arrowhead {
-                fill: #041;
+                fill: #051;
                 stroke: none;
             }
 
@@ -149,12 +149,12 @@ ROUTES
                 opacity: 0.4;
             }
             .popup text {
-                fill: #00E;
+                fill: #55F;
                 text-anchor: middle;
             }
 
             .icon path {
-                fill: #00E;
+                fill: #55F;
                 stroke: none;
             }
             .icon rect {
@@ -2187,7 +2187,7 @@ ROUTES
         </g>
         <g id="sGP" class="system" >
             <text class="name" x="588" y="600">Giant Planet</text>
-            <text class="name race" x="636" y="444">Giant Planet</text>
+            <text class="name race" x="636" y="444"></text>
             <ellipse class="boundary" cx="608" cy="520" rx="80" ry="103" transform="rotate(50 608,520)" />
             <use class="thumb" x="593"  y="505" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick('sGP');" />
         </g>
