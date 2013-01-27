@@ -17,7 +17,6 @@ LICENSE
 
 TODO
     * nice icons
-    * try in other browsers (besides Chrome)
 
 FUTURE (in no particular order)
     * routes
@@ -41,7 +40,6 @@ FUTURE (in no particular order)
         * rotatable (for tablets)
         * see if HTML5 pushState() works here
         * finesse colors more
-        * get working in other browsers (besides Chrome)
         * curve system and race names around boundary
         * maybe a few quick animated transitions
         * cursor over <text> in system popup should stay a pointer
