@@ -17,7 +17,6 @@ LICENSE
 
 TODO
     * nice icons
-    * version number
 
 FUTURE (in no particular order)
     * routes
@@ -105,6 +104,11 @@ ROUTES
                 stroke: #601;
                 stroke-width: 2;
                 stroke-opacity: 0.9;
+            }
+            #version {
+                fill: none;
+                stroke: #22A;
+                text-anchor: end;
             }
 
             #routes .route .path {
@@ -2266,6 +2270,8 @@ ROUTES
         <circle class="navpoint" cx="876" cy="432" r="10" />
         <circle class="navpoint" cx="893" cy="573" r="10" />
         <circle class="navpoint" cx="933" cy="217" r="10" />
+
+        <text id="version" x="1196" y="796">v1 - 27 Jan 2013</text>
     </g>
 
     <g id="routes">
