@@ -16,8 +16,7 @@ LICENSE
     related or neighboring rights to this work.
 
 TODO
-    * map: system names
-    * map: race names
+    * finesse colors more (less dark)
     * nice icons
     * try in other browsers (besides Chrome)
 
@@ -44,6 +43,9 @@ FUTURE (in no particular order)
         * see if HTML5 pushState() works here
         * finesse colors more
         * get working in other browsers (besides Chrome)
+        * curve system and race names around boundary
+        * maybe a few quick animated transitions
+        * cursor over <text> in system popup should stay a pointer
 
 
 ROUTES
@@ -89,6 +91,11 @@ ROUTES
             #map .system.hazard .boundary {
                 stroke: #301;
                 stroke-dasharray: 6 3;
+            }
+            #map .system .name {
+                fill: #116;
+                stroke: none;
+                text-anchor: middle;
             }
             #map .path {
                 fill: none;
@@ -1298,7 +1305,7 @@ ROUTES
                     systemA: 'sIW',
                     systemB: 'sWS',
                     distance: 2,
-                    routepoints: [3, 3],
+                    routepoints: [1, 4],
                     enabled: null
                 },
                 'sIW-sWW': {
@@ -1998,7 +2005,8 @@ ROUTES
             var system = SYSTEMS[systemID],
                 race,
                 systemUI,
-                thumbUI;
+                thumbUI,
+                raceUI;
 
             // unset old race
             race = RACES[system.raceID];
@@ -2014,6 +2022,8 @@ ROUTES
             systemUI = document.documentElement.getElementById(systemID);
             thumbUI = systemUI.getElementsByClassName('thumb')[0];
             thumbIconSet(thumbUI, raceID || 'rUN');
+            raceUI = systemUI.getElementsByClassName('race')[0];
+            raceUI.textContent = raceID ? race.name : '';
 
             routesCalculate();
         }
@@ -2040,6 +2050,8 @@ ROUTES
 
 
         function gameSetup() {
+            // This needs to be calculated everytime the game popup is saved because
+            // setting the black market can affect who can sell to whom.
             RACE_BUYERS = {};
             objectEach(RACES, function(sellerID, seller) {
                 var r, rr;
@@ -2058,34 +2070,8 @@ ROUTES
         }
 
 
-        window.onload = function() {
-            ROUTEPOINT_ANGLE = 360 / ROUTEPOINT_COUNT;
-
-            gameSetup();
-
-            /* DEBUGGING route points
-            #routes circle.DEBUGGING {
-                fill: #013;
-                stroke: none;
-            }
-            var routesUI = document.getElementById('routes');
-            objectEach(SYSTEMS, function(systemID, system) {
-                if (system.hazard) {
-                    return;
-                }
-                for (var rp = 0; rp < ROUTEPOINT_COUNT; rp += 1) {
-                    var rpXY = systemRoutepointGet(system, rp);
-                    var rpUI = document.createElementNS(NS.svg, 'circle');
-                    rpUI.setAttribute('class', 'DEBUGGING');
-                    rpUI.setAttribute('cx', rpXY[0]);
-                    rpUI.setAttribute('cy', rpXY[1]);
-                    rpUI.setAttribute('r', 3);
-                    routesUI.appendChild(rpUI);
-                }
-            });
-            */
-
-            if ('#random' === window.location.hash) {
+        function gameChoose(gameID) {
+            if ('random' === gameID) {
                 var systemIDs = arrayShuffle(Object.keys(SYSTEMS));
                 console.log(JSON.stringify(systemIDs));
                 var raceIDs = Object.keys(RACES);
@@ -2100,6 +2086,18 @@ ROUTES
                     systemRaceSet(systemID, raceID);
                 });
             }
+        }
+
+
+        function mapSetup() {
+            ROUTEPOINT_ANGLE = 360 / ROUTEPOINT_COUNT;
+        }
+
+
+        window.onload = function() {
+            mapSetup();
+            gameSetup();
+            gameChoose(window.location.hash.substring(1));
         };
     ]]></script>
 
@@ -2139,53 +2137,78 @@ ROUTES
         <path class="path" d="M 92,392 l -37,24" />
 
         <g id="sAS" class="system" >
+            <text class="name" x="736" y="765">Asteroid System</text>
+            <text class="name race" x="736" y="601"></text>
             <path class="boundary" d="m 440,734 c 54,0 172,-72 172,-72 0,0 70,-75 117,-77 60,0 161,83 161,83 0,0 -12,64 -12,64 -69,64 -279,32 -279,32 0,0 -99,31 -159,-30 z" />
             <use class="thumb" x="720" y="670" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick('sAS');" />
         </g>
         <g id="sCW" class="system" >
+            <text class="name" x="181" y="423">Colony World</text>
+            <text class="name race" x="181" y="288"></text>
             <ellipse class="boundary" cx="181" cy="353" rx="103" ry="78" />
             <use class="thumb" x="166" y="338" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick('sCW');" />
         </g>
         <g id="sDW" class="system" >
+            <text class="name" x="484" y="157">Desert World</text>
+            <text class="name race" x="484" y="28"></text>
             <ellipse class="boundary" cx="484" cy="90" rx="115" ry="75" />
             <use class="thumb" x="469" y="75" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick('sDW');" />
         </g>
         <g id="sGH" class="system" >
+            <text class="name" x="429" y="478">Galactic Hub</text>
             <use class="thumb" x="414" y="433" width="30" height="30" xlink:href="#icon-sGH" />
         </g>
         <g id="sGP" class="system" >
+            <text class="name" x="588" y="600">Giant Planet</text>
+            <text class="name race" x="636" y="444">Giant Planet</text>
             <ellipse class="boundary" cx="608" cy="520" rx="80" ry="103" transform="rotate(50 608,520)" />
             <use class="thumb" x="593"  y="505" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick('sGP');" />
         </g>
         <g id="sIB" class="system" >
+            <text class="name" x="362" y="311">Intersteller Biosphere</text>
+            <text class="name race" x="332" y="167"></text>
             <ellipse class="boundary" cx="348" cy="245" rx="100" ry="80" transform="rotate(55 348,245)" />
             <use class="thumb" x="333" y="230" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick('sIB');" />
         </g>
         <g id="sIM" class="system" >
+            <text class="name" x="1027" y="151">Inhabited Moon</text>
+            <text class="name race" x="1027" y="35"></text>
             <ellipse class="boundary" cx="1027" cy="91" rx="105" ry="70" />
             <use class="thumb" x="1012" y="76" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick('sIM');" />
         </g>
         <g id="sIW" class="system" >
+            <text class="name" x="197" y="777">Ice World</text>
+            <text class="name race" x="197" y="658"></text>
             <ellipse class="boundary" cx="197" cy="714" rx="99" ry="70" />
             <use class="thumb" x="182" y="699" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick('sIW');" />
         </g>
         <g id="sJW" class="system" >
+            <text class="name" x="140" y="603">Jungle World</text>
+            <text class="name race" x="140" y="471"></text>
             <ellipse class="boundary" cx="140" cy="534" rx="95" ry="77" />
             <use class="thumb" x="125" y="519" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick('sJW');" />
         </g>
         <g id="sMS" class="system" >
+            <text class="name" x="885" y="540">Multi-Generational Ship</text>
+            <text class="name race" x="885" y="450"></text>
             <ellipse class="boundary" cx="885" cy="503" rx="90" ry="70" />
             <use class="thumb" x="870" y="488" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick('sMS');" />
         </g>
         <g id="sNH" class="system" >
+            <text class="name" x="567" y="408">Nebula Habitat</text>
+            <text class="name race" x="567" y="280"></text>
             <ellipse class="boundary" cx="567" cy="341" rx="96" ry="78" />
             <use class="thumb" x="552" y="326" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick('sNH');" />
         </g>
         <g id="sPP" class="system" >
+            <text class="name" x="1041" y="440">Poluted Planet</text>
+            <text class="name race" x="1041" y="309"></text>
             <ellipse class="boundary" cx="1041" cy="372" rx="102" ry="77" />
             <use class="thumb" x="1026" y="357" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick('sPP');" />
         </g>
         <g id="sRP" class="system" >
+            <text class="name" x="159" y="198">Trapped Rogue Planet</text>
+            <text class="name race" x="121" y="45"></text>
             <ellipse class="boundary" cx="142" cy="128" rx="108" ry="85" transform="rotate(45 142,128)" />
             <use class="thumb" x="127" y="113" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick('sRP');" />
         </g>
@@ -2196,10 +2219,14 @@ ROUTES
             <ellipse class="boundary" cx="740" cy="73" rx="58" ry="44" />
         </g>
         <g id="sWS" class="system" >
+            <text class="name" x="1038" y="753">War-Torn System</text>
+            <text class="name race" x="1038" y="637"></text>
             <ellipse class="boundary" cx="1038" cy="693" rx="105" ry="69" />
             <use class="thumb" x="1023" y="678" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick('sWS');" />
         </g>
         <g id="sWW" class="system" >
+            <text class="name" x="767" y="287">Water World</text>
+            <text class="name race" x="767" y="161"></text>
             <ellipse class="boundary" cx="767" cy="221" rx="104" ry="73" />
             <use class="thumb" x="752" y="206" width="30" height="30" xlink:href="#icon-rUN" onclick="systemThumbClick('sWW');" />
         </g>
@@ -2245,7 +2272,7 @@ ROUTES
             </g>
             <g class="race r06">
                 <use class="thumb" x="100" y="85" width="30" height="30" xlink:href="#icon-r06" />
-                <text class="name" x="115" y="130">Human</text>
+                <text class="name" x="115" y="130">Humans</text>
             </g>
             <g class="race r07">
                 <use class="thumb" x="170" y="85" width="30" height="30" xlink:href="#icon-r07" />
